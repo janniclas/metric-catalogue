@@ -48,6 +48,8 @@
 - Added related metrics to the detail view and linked source files to GitHub when `VITE_REPO_URL` is set.
 - Added phase-card navigation to `/metrics` with preselected phase filters.
 - Fixed phase filter interaction so it remains clickable alongside URL preselection.
+- Migrated UI tests to `@testing-library/vue` + `happy-dom`.
+- Added a shared metrics cache in `useMetricsCatalogue` to prevent duplicate fetches.
 
 ## Requirements Added
 - The full metrics list lives in its own route (`/metrics`).

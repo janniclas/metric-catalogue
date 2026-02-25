@@ -94,7 +94,7 @@
 
 2. Component + Interaction Tests
 1. Add UI tests for filters, routing, and detail view behavior using a lightweight component test runner.
-1. Recommended tooling: `vitest` (use `vitest`, already available in the application).
+1. Tooling: `@testing-library/vue` + `vitest` with `happy-dom`.
 
 3. End-to-End (E2E) Smoke Tests
 1. Run against a built preview server.
