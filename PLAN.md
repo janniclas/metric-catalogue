@@ -20,18 +20,22 @@
 - Backward-compatible: metrics remain readable in raw Markdown on GitHub.
 
 ## UI And UX Plan
-1. Phase Overview Screen
+1. App Shell
+1. Global navbar with links to Overview and Metrics list routes.
+1. Dedicated routes: `/` for overview, `/metrics` for full list.
+
+2. Phase Overview Screen
 1. Display SSDLC phases as cards or a visual timeline.
 1. Show top-level metrics per phase with quick drill-down.
 1. Provide a global search and a “view all metrics” entry point.
 
-2. Metrics List Screen
+3. Metrics List Screen
 1. Full list view with filter panel and search.
 1. Filters by phase, tags, thresholds, related tools, and dependencies.
 1. Support multi-select filters and clear-all.
 1. Show key metadata at a glance, with detail page or drawer.
 
-3. Metric Detail View
+4. Metric Detail View
 1. Render Markdown content with structured metadata.
 1. Show dependency graph or list of child metrics.
 1. Links to related tools and references.
@@ -53,6 +57,7 @@
 1. Add optional JSON index generation script for speed.
 
 3. Frontend Screens
+1. Add app shell + routing to split overview and metrics list.
 1. Build phase overview and top-level metrics view.
 1. Build full list with filters, search, and summary cards.
 1. Build metric detail view and dependency display.
@@ -75,3 +80,55 @@
 ## Next Confirmation Needed
 - Confirm exact metadata fields and SSDLC phase taxonomy.
 - Confirm the CI validation approach and tooling.
+
+## Test Concept
+### Goals
+1. Prevent regressions in core UX flows (filters, routing, detail view, markdown rendering).
+2. Keep tests stable and fast to run locally and in CI.
+3. Cover data integrity (schema validation) and UI behavior separately.
+
+### Test Layers
+1. Data/Schema Tests (already implemented)
+1. Node-based tests for the metrics index builder and schema validation.
+1. Continue to validate dependencies, duplicate IDs, and empty bodies.
+
+2. Component + Interaction Tests
+1. Add UI tests for filters, routing, and detail view behavior using a lightweight component test runner.
+1. Recommended tooling: `vitest` (use `vitest`, already available in the application).
+
+3. End-to-End (E2E) Smoke Tests
+1. Run against a built preview server.
+1. Focus on navigation and filtering flows, not visual styling.
+
+### Core Test Scenarios (Must-Have)
+1. Overview → Metrics navigation
+1. Click a phase card in overview.
+1. Assert metrics list opens with the phase filter preselected.
+
+2. Phase filter toggle
+1. Check a phase checkbox and confirm list updates.
+1. Uncheck the same checkbox and confirm list resets.
+
+3. Tag + Tool filtering
+1. Select a tag and a tool and verify list contains matching metrics.
+1. Clear filters and verify all metrics return.
+
+4. Search behavior
+1. Search matches metric title, id, tags, and tools.
+1. Search empty state displayed when no matches.
+
+5. Metric detail view
+1. Open metric card from list.
+1. Ensure markdown renders and “Related metrics” links navigate to another metric.
+
+6. Source file link behavior
+1. With `VITE_REPO_URL` set, verify the source file link points to GitHub.
+1. Without the env var, ensure plain text fallback renders.
+
+### Test Data Strategy
+1. Use the sample metrics in `metrics/` as fixtures for tests.
+1. Add a dedicated “test-only” metrics set if more deterministic fixtures are needed.
+
+### CI Integration
+1. Run data/schema tests on every PR (already in GitHub Actions).
+1. Add UI/E2E test job on PRs once tooling is finalized.

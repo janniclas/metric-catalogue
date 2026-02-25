@@ -1,0 +1,311 @@
+{
+  "generated_at": "2026-02-25T09:48:28.535Z",
+  "phases": [
+    {
+      "id": "plan",
+      "name": "Plan",
+      "description": "Define security goals, requirements, and risk assumptions.",
+      "icon": "calendar-check",
+      "order": 1
+    },
+    {
+      "id": "code",
+      "name": "Code",
+      "description": "Implement features with secure coding practices.",
+      "icon": "code-2",
+      "order": 2
+    },
+    {
+      "id": "build",
+      "name": "Build",
+      "description": "Produce build artifacts and manage dependencies.",
+      "icon": "hammer",
+      "order": 3
+    },
+    {
+      "id": "test",
+      "name": "Test",
+      "description": "Validate behavior and security properties before release.",
+      "icon": "flask-conical",
+      "order": 4
+    },
+    {
+      "id": "release",
+      "name": "Release",
+      "description": "Prepare release packages and approvals.",
+      "icon": "package",
+      "order": 5
+    },
+    {
+      "id": "deploy",
+      "name": "Deploy",
+      "description": "Ship and configure software in target environments.",
+      "icon": "rocket",
+      "order": 6
+    },
+    {
+      "id": "operate",
+      "name": "Operate",
+      "description": "Run and maintain services in production.",
+      "icon": "settings",
+      "order": 7
+    },
+    {
+      "id": "monitor",
+      "name": "Monitor",
+      "description": "Detect, analyze, and respond to security signals.",
+      "icon": "activity",
+      "order": 8
+    }
+  ],
+  "metrics": [
+    {
+      "id": "build-dependency-vulnerability-rate",
+      "title": "Dependency Vulnerability Rate",
+      "phase": "build",
+      "thresholds": [
+        {
+          "name": "Critical vulns target",
+          "value": "= 0",
+          "description": "Number of critical vulnerabilities in production dependencies."
+        }
+      ],
+      "tags": [
+        "dependencies",
+        "supply-chain"
+      ],
+      "related_tools": [
+        "snyk",
+        "dependabot"
+      ],
+      "depends_on": [
+        "code-secure-review-coverage"
+      ],
+      "references": [
+        "https://owasp.org/www-project-dependency-check/"
+      ],
+      "markdown": "# Description\nTrack the count of critical vulnerabilities present in dependencies at build time.\n\n# Measurement\nCount critical CVEs reported by dependency scanning tools for the build.\n\n# Notes\nSupports reducing supply-chain exposure before release.",
+      "source_path": "metrics/build-dependency-vulnerability-rate.md"
+    },
+    {
+      "id": "deploy-hardening-compliance",
+      "title": "Deployment Hardening Compliance",
+      "phase": "deploy",
+      "thresholds": [
+        {
+          "name": "Compliance target",
+          "value": ">= 90%",
+          "description": "Percentage of environments meeting hardening baseline."
+        }
+      ],
+      "tags": [
+        "hardening",
+        "compliance"
+      ],
+      "related_tools": [
+        "ansible",
+        "terraform"
+      ],
+      "depends_on": [
+        "release-security-approval-latency"
+      ],
+      "references": [
+        "https://www.cisecurity.org/cis-benchmarks"
+      ],
+      "markdown": "# Description\nMeasure how many deployment environments meet the defined hardening baseline.\n\n# Measurement\nDivide the number of environments passing hardening checks by the total number of environments.\n\n# Notes\nEnsures production environments remain aligned with security baselines.",
+      "source_path": "metrics/deploy-hardening-compliance.md"
+    },
+    {
+      "id": "operate-incident-response-readiness",
+      "title": "Incident Response Readiness",
+      "phase": "operate",
+      "thresholds": [
+        {
+          "name": "Readiness target",
+          "value": ">= 95%",
+          "description": "Percentage of services with up-to-date runbooks."
+        }
+      ],
+      "tags": [
+        "incident-response",
+        "readiness"
+      ],
+      "related_tools": [
+        "pagerduty",
+        "splunk"
+      ],
+      "depends_on": [
+        "deploy-hardening-compliance"
+      ],
+      "references": [
+        "https://www.cisa.gov/resources-tools/services/incident-response"
+      ],
+      "markdown": "# Description\nMeasure the percentage of services with current incident response runbooks and on-call coverage.\n\n# Measurement\nCount services with reviewed runbooks in the last 6 months divided by total services.\n\n# Notes\nKeeps response posture aligned with operational reality.",
+      "source_path": "metrics/operate-incident-response-readiness.md"
+    },
+    {
+      "id": "code-secure-review-coverage",
+      "title": "Secure Code Review Coverage",
+      "phase": "code",
+      "thresholds": [
+        {
+          "name": "Coverage target",
+          "value": ">= 95%",
+          "description": "Percentage of pull requests that include a secure review."
+        }
+      ],
+      "tags": [
+        "code-review",
+        "governance"
+      ],
+      "related_tools": [
+        "github",
+        "gitlab"
+      ],
+      "depends_on": [
+        "plan-security-requirements-coverage"
+      ],
+      "references": [
+        "https://owasp.org/www-project-code-review-guide/"
+      ],
+      "markdown": "# Description\nMeasure the percentage of pull requests that include a documented secure code review.\n\n# Measurement\nCount pull requests marked with a secure review label divided by all merged pull requests.\n\n# Notes\nProvides insight into adherence to secure review requirements.",
+      "source_path": "metrics/code-secure-review-coverage.md"
+    },
+    {
+      "id": "release-security-approval-latency",
+      "title": "Security Approval Latency",
+      "phase": "release",
+      "thresholds": [
+        {
+          "name": "Approval SLA",
+          "value": "<= 2 days",
+          "description": "Median time for security approval."
+        }
+      ],
+      "tags": [
+        "approvals",
+        "governance"
+      ],
+      "related_tools": [
+        "jira",
+        "servicenow"
+      ],
+      "depends_on": [
+        "test-security-coverage"
+      ],
+      "references": [
+        "https://owasp.org/www-project-application-security-verification-standard/"
+      ],
+      "markdown": "# Description\nTrack the median time to obtain security approval for release packages.\n\n# Measurement\nMeasure the time between security review request and approval completion.\n\n# Notes\nHelps identify bottlenecks in release governance.",
+      "source_path": "metrics/release-security-approval-latency.md"
+    },
+    {
+      "id": "monitor-detection-coverage",
+      "title": "Security Detection Coverage",
+      "phase": "monitor",
+      "thresholds": [
+        {
+          "name": "Coverage target",
+          "value": ">= 90%",
+          "description": "Percentage of critical assets with detection rules."
+        }
+      ],
+      "tags": [
+        "monitoring",
+        "detection"
+      ],
+      "related_tools": [
+        "splunk",
+        "datadog"
+      ],
+      "depends_on": [
+        "operate-incident-response-readiness"
+      ],
+      "references": [
+        "https://attack.mitre.org/techniques/"
+      ],
+      "markdown": "# Description\nTrack coverage of security detection rules for critical assets.\n\n# Measurement\nDivide the number of critical assets with active detection rules by the total number of critical assets.\n\n# Notes\nEnsures monitoring keeps pace with expanding infrastructure.",
+      "source_path": "metrics/monitor-detection-coverage.md"
+    },
+    {
+      "id": "plan-security-requirements-coverage",
+      "title": "Security Requirements Coverage",
+      "phase": "plan",
+      "thresholds": [
+        {
+          "name": "Coverage target",
+          "value": ">= 90%",
+          "description": "Percentage of epics with explicit security requirements."
+        }
+      ],
+      "tags": [
+        "requirements",
+        "governance"
+      ],
+      "related_tools": [
+        "jira"
+      ],
+      "references": [
+        "https://owasp.org/www-project-application-security-verification-standard/"
+      ],
+      "markdown": "# Description\nMeasure how many planned epics or features have explicit security requirements before implementation begins.\n\n# Measurement\nCalculate the percentage of epics with at least one security requirement documented in the planning system.\n\n# Notes\nHigher coverage reduces late-stage security surprises and rework.",
+      "source_path": "metrics/plan-security-requirements-coverage.md"
+    },
+    {
+      "id": "test-security-coverage",
+      "title": "Security Test Coverage",
+      "phase": "test",
+      "thresholds": [
+        {
+          "name": "Coverage target",
+          "value": ">= 85%",
+          "description": "Percentage of security test cases executed."
+        }
+      ],
+      "tags": [
+        "testing",
+        "coverage"
+      ],
+      "related_tools": [
+        "zap",
+        "burp-suite"
+      ],
+      "depends_on": [
+        "build-dependency-vulnerability-rate"
+      ],
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/"
+      ],
+      "markdown": "# Description\nMeasure coverage of security-focused test cases in the test suite.\n\n# Measurement\nCalculate the percentage of required security tests executed in CI.\n\n# Notes\nHelps ensure regression tests cover known security scenarios.",
+      "source_path": "metrics/test-security-coverage.md"
+    },
+    {
+      "id": "plan-threat-model-coverage",
+      "title": "Threat Model Coverage",
+      "phase": "plan",
+      "thresholds": [
+        {
+          "name": "Coverage target",
+          "value": ">= 80%",
+          "description": "Percentage of critical features with a threat model."
+        }
+      ],
+      "tags": [
+        "requirements",
+        "threat-modeling"
+      ],
+      "related_tools": [
+        "threatmodeler",
+        "miro"
+      ],
+      "depends_on": [
+        "plan-security-requirements-coverage"
+      ],
+      "references": [
+        "https://owasp.org/www-community/Threat_Modeling"
+      ],
+      "markdown": "# Description\nTrack how many critical features have a documented threat model before implementation begins.\n\n# Measurement\nDivide the count of critical features with a threat model by the total number of critical features planned for the release.\n\n# Notes\nHelps ensure that high-risk areas are assessed before coding starts.",
+      "source_path": "metrics/plan-threat-model-coverage.md"
+    }
+  ]
+}

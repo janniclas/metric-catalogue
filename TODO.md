@@ -33,3 +33,22 @@
 
 ## Open Questions For Phase 1
 - Confirm the icon format for phases (e.g., icon name, SVG path, or emoji).
+
+## Implemented So Far
+- Added `metrics/` structure with `metrics/phases.json`, `metrics/README.md`, and `metrics/templates/metric.md`.
+- Added sample metric `metrics/plan-security-requirements-coverage.md`.
+- Added `scripts/metrics-index.mjs` + `scripts/build-metrics-index.mjs` to validate metrics and generate `public/metrics/index.json`.
+- Added `.github/PULL_REQUEST_TEMPLATE.md` and `.github/workflows/metrics-validation.yml`.
+- Added `npm run metrics:build` and `npm test` (Node test runner) plus tests in `scripts/__tests__/metrics-index.test.mjs`.
+- Updated `vite.config.ts` with a GitHub Pages base path env hook (`VITE_BASE_PATH`).
+- Added `src/lib/metrics.ts` data loader and a Phase Overview UI in `src/App.vue`.
+- Replaced base styles in `src/style.css` with the catalogue UI design.
+- Added Vue Router with dedicated views for overview and metrics list plus a navbar shell.
+- Added metric detail route with markdown rendering using `marked` + `DOMPurify`.
+- Added related metrics to the detail view and linked source files to GitHub when `VITE_REPO_URL` is set.
+- Added phase-card navigation to `/metrics` with preselected phase filters.
+- Fixed phase filter interaction so it remains clickable alongside URL preselection.
+
+## Requirements Added
+- The full metrics list lives in its own route (`/metrics`).
+- The app includes a global navbar to navigate between overview and metrics.

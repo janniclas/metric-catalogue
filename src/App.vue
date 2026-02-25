@@ -1,30 +1,22 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="app-shell">
+    <nav class="navbar">
+      <div class="navbar__brand">
+        <span class="brand-mark">Metric Catalogue</span>
+        <span class="brand-sub">SSDLC metrics</span>
+      </div>
+      <div class="navbar__links">
+        <RouterLink to="/" class="nav-link" active-class="nav-link--active" end>Overview</RouterLink>
+        <RouterLink to="/metrics" class="nav-link" active-class="nav-link--active">Metrics</RouterLink>
+        <button class="ghost" type="button">Propose a metric</button>
+      </div>
+    </nav>
+    <main class="app-content">
+      <RouterView />
+    </main>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>

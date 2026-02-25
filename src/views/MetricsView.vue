@@ -1,0 +1,243 @@
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
+
+const route = useRoute();
+const { phases, metrics, loading, error } = useMetricsCatalogue();
+
+const search = ref("");
+const selectedPhases = ref<string[]>([]);
+const selectedTags = ref<string[]>([]);
+const selectedTools = ref<string[]>([]);
+const requireThresholds = ref(false);
+const requireDependencies = ref(false);
+
+watch(
+  () => route.query.phase,
+  (queryPhase) => {
+    const normalized = Array.isArray(queryPhase)
+      ? queryPhase.map((value) => String(value))
+      : queryPhase
+        ? [String(queryPhase)]
+        : [];
+    selectedPhases.value = normalized;
+  },
+  { immediate: true }
+);
+
+const selectedPhaseSet = computed(() => new Set(selectedPhases.value));
+const selectedTagSet = computed(() => new Set(selectedTags.value));
+const selectedToolSet = computed(() => new Set(selectedTools.value));
+
+const phaseLabelMap = computed(() => {
+  const map = new Map<string, string>();
+  for (const phase of phases.value) {
+    map.set(phase.id, phase.name);
+  }
+  return map;
+});
+
+const availableTags = computed(() => {
+  const set = new Set<string>();
+  for (const metric of metrics.value) {
+    for (const tag of metric.tags ?? []) {
+      set.add(tag);
+    }
+  }
+  return [...set].sort((a, b) => a.localeCompare(b));
+});
+
+const availableTools = computed(() => {
+  const set = new Set<string>();
+  for (const metric of metrics.value) {
+    for (const tool of metric.related_tools ?? []) {
+      set.add(tool);
+    }
+  }
+  return [...set].sort((a, b) => a.localeCompare(b));
+});
+
+const filteredMetrics = computed(() => {
+  const query = search.value.trim().toLowerCase();
+  const phaseFilter = selectedPhaseSet.value;
+  const tagFilter = selectedTagSet.value;
+  const toolFilter = selectedToolSet.value;
+
+  return metrics.value.filter((metric) => {
+    if (query) {
+      const haystack = [
+        metric.title,
+        metric.id,
+        metric.markdown,
+        (metric.tags ?? []).join(" "),
+        (metric.related_tools ?? []).join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+      if (!haystack.includes(query)) {
+        return false;
+      }
+    }
+
+    if (phaseFilter.size > 0 && !phaseFilter.has(metric.phase)) {
+      return false;
+    }
+
+    if (tagFilter.size > 0) {
+      const metricTags = metric.tags ?? [];
+      if (!metricTags.some((tag) => tagFilter.has(tag))) {
+        return false;
+      }
+    }
+
+    if (toolFilter.size > 0) {
+      const metricTools = metric.related_tools ?? [];
+      if (!metricTools.some((tool) => toolFilter.has(tool))) {
+        return false;
+      }
+    }
+
+    if (requireThresholds.value && !(metric.thresholds?.length ?? 0)) {
+      return false;
+    }
+
+    if (requireDependencies.value && !(metric.depends_on?.length ?? 0)) {
+      return false;
+    }
+
+    return true;
+  });
+});
+
+const filteredCountLabel = computed(() => {
+  if (loading.value || error.value) return "";
+  return `${filteredMetrics.value.length} of ${metrics.value.length} metrics`;
+});
+
+function clearFilters() {
+  search.value = "";
+  selectedPhases.value = [];
+  selectedTags.value = [];
+  selectedTools.value = [];
+  requireThresholds.value = false;
+  requireDependencies.value = false;
+}
+</script>
+
+<template>
+  <section class="metrics-section">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Catalogue</p>
+        <h2>All metrics</h2>
+      </div>
+      <div class="section-subtitle">
+        <p>Filter by phase, tags, tools, or dependencies. Matches any selected tag or tool.</p>
+        <p class="count" v-if="filteredCountLabel">{{ filteredCountLabel }}</p>
+      </div>
+    </div>
+
+    <div v-if="loading" class="state">Loading metrics catalogue…</div>
+    <div v-else-if="error" class="state state--error">{{ error }}</div>
+    <div v-else class="metrics-layout">
+      <aside class="filters">
+        <label class="search">
+          <span>Search</span>
+          <input v-model="search" type="search" placeholder="Search by title, id, or description" />
+        </label>
+
+        <div class="filter-group">
+          <h3>Phases</h3>
+          <div class="option-grid">
+            <label v-for="phase in phases" :key="phase.id" class="option">
+              <input
+                type="checkbox"
+                v-model="selectedPhases"
+                :value="phase.id"
+              />
+              <span>{{ phase.name }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h3>Tags</h3>
+          <div class="option-grid">
+            <label v-for="tag in availableTags" :key="tag" class="option">
+              <input
+                type="checkbox"
+                v-model="selectedTags"
+                :value="tag"
+              />
+              <span>{{ tag }}</span>
+            </label>
+            <p v-if="availableTags.length === 0" class="empty">No tags yet.</p>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h3>Related tools</h3>
+          <div class="option-grid">
+            <label v-for="tool in availableTools" :key="tool" class="option">
+              <input
+                type="checkbox"
+                v-model="selectedTools"
+                :value="tool"
+              />
+              <span>{{ tool }}</span>
+            </label>
+            <p v-if="availableTools.length === 0" class="empty">No tools yet.</p>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h3>Other</h3>
+          <label class="option">
+            <input type="checkbox" v-model="requireThresholds" />
+            <span>Has thresholds</span>
+          </label>
+          <label class="option">
+            <input type="checkbox" v-model="requireDependencies" />
+            <span>Has dependencies</span>
+          </label>
+        </div>
+
+        <button class="ghost" type="button" @click="clearFilters">Clear filters</button>
+      </aside>
+
+      <div class="metrics-grid">
+        <router-link
+          v-for="metric in filteredMetrics"
+          :key="metric.id"
+          :to="`/metrics/${metric.id}`"
+          class="metric-card"
+        >
+          <header>
+            <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
+            <h3>{{ metric.title }}</h3>
+            <p class="metric-id">{{ metric.id }}</p>
+          </header>
+
+          <div class="metric-meta">
+            <div>
+              <span class="meta-label">Tags</span>
+              <p>{{ metric.tags?.join(", ") || "—" }}</p>
+            </div>
+            <div>
+              <span class="meta-label">Tools</span>
+              <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
+            </div>
+          </div>
+
+          <div class="metric-footer">
+            <span>Thresholds: {{ metric.thresholds?.length ?? 0 }}</span>
+            <span>Depends on: {{ metric.depends_on?.length ?? 0 }}</span>
+          </div>
+        </router-link>
+
+        <div v-if="filteredMetrics.length === 0" class="state">No metrics match the filters.</div>
+      </div>
+    </div>
+  </section>
+</template>

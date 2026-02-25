@@ -1,0 +1,119 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
+import type { Metric } from "../lib/metrics";
+
+const { phases, metrics, loading, error, formattedUpdatedAt } = useMetricsCatalogue();
+
+const metricPhaseById = computed(() => {
+  const map = new Map<string, string>();
+  for (const metric of metrics.value) {
+    map.set(metric.id, metric.phase);
+  }
+  return map;
+});
+
+const dependedOnInPhase = computed(() => {
+  const map = new Map<string, Set<string>>();
+  for (const phase of phases.value) {
+    map.set(phase.id, new Set());
+  }
+  for (const metric of metrics.value) {
+    const phase = metric.phase;
+    const set = map.get(phase) ?? new Set<string>();
+    for (const dependency of metric.depends_on ?? []) {
+      if (metricPhaseById.value.get(dependency) === phase) {
+        set.add(dependency);
+      }
+    }
+    map.set(phase, set);
+  }
+  return map;
+});
+
+const topLevelByPhase = computed(() => {
+  const map = new Map<string, Metric[]>();
+  for (const phase of phases.value) {
+    map.set(phase.id, []);
+  }
+  for (const metric of metrics.value) {
+    const dependedOn = dependedOnInPhase.value.get(metric.phase);
+    if (dependedOn?.has(metric.id)) {
+      continue;
+    }
+    const bucket = map.get(metric.phase) ?? [];
+    bucket.push(metric);
+    map.set(metric.phase, bucket);
+  }
+  return map;
+});
+</script>
+
+<template>
+  <div class="app">
+    <header class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">SSDLC Metric Catalogue</p>
+        <h1>Security metrics that map cleanly to software delivery.</h1>
+        <p class="subtitle">
+          Browse the phases of the SSDLC and the top-level metrics that define how security is measured
+          across the lifecycle.
+        </p>
+        <div class="hero__meta">
+          <span>{{ phases.length }} phases</span>
+          <span>•</span>
+          <span>{{ metrics.length }} metrics</span>
+          <span v-if="formattedUpdatedAt">• Updated {{ formattedUpdatedAt }}</span>
+        </div>
+      </div>
+      <div class="hero__panel">
+        <div class="panel-card">
+          <h2>Phase Overview</h2>
+          <p>Start here for a high-level view of the security metrics aligned to each SSDLC phase.</p>
+          <div class="panel-actions">
+            <router-link class="primary" to="/metrics">View all metrics</router-link>
+            <button class="ghost" type="button">Propose a metric</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="phase-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Phase map</p>
+          <h2>SSDLC phases and top-level metrics</h2>
+        </div>
+        <p class="section-subtitle">
+          Top-level metrics are those that are not dependencies of other metrics. Each card shows the
+          metrics that define success for that phase.
+        </p>
+      </div>
+
+      <div v-if="loading" class="state">Loading metrics catalogue…</div>
+      <div v-else-if="error" class="state state--error">{{ error }}</div>
+      <div v-else class="phase-grid">
+        <router-link
+          v-for="(phase, index) in phases"
+          :key="phase.id"
+          class="phase-card phase-card--link"
+          :style="{ '--delay': index }"
+          :to="`/metrics?phase=${phase.id}`"
+        >
+          <header class="phase-card__header">
+            <div class="phase-card__icon">{{ phase.icon }}</div>
+            <div>
+              <h3>{{ phase.name }}</h3>
+              <p>{{ phase.description }}</p>
+            </div>
+          </header>
+
+          <div class="phase-card__meta">
+            <span class="meta-label">Top-level metrics</span>
+            <span class="meta-value">{{ topLevelByPhase.get(phase.id)?.length ?? 0 }}</span>
+          </div>
+        </router-link>
+      </div>
+    </section>
+  </div>
+</template>

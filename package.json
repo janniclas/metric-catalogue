@@ -5,11 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "metrics:build": "node scripts/build-metrics-index.mjs",
+    "build": "npm run metrics:build && vue-tsc -b && vite build",
+    "test": "node --test",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "3.5.25"
+    "dompurify": "3.2.7",
+    "front-matter": "4.0.2",
+    "marked": "15.0.12",
+    "vue": "3.5.25",
+    "vue-router": "5.0.3"
   },
   "devDependencies": {
     "@types/node": "24.10.1",
@@ -17,7 +23,9 @@
     "@vue/tsconfig": "0.8.1",
     "typescript": "5.9.3",
     "vite": "8.0.0-beta.13",
-    "vue-tsc": "3.1.5"
+    "vitest": "4.0.18",
+    "vue-tsc": "3.1.5",
+    "zod": "3.24.1"
   },
   "overrides": {
     "vite": "8.0.0-beta.13"
