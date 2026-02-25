@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
+import {computed, ref, watch} from "vue";
+import {useRoute} from "vue-router";
+import {useMetricsCatalogue} from "../lib/useMetricsCatalogue";
 
 const route = useRoute();
 const { phases, metrics, loading, error } = useMetricsCatalogue();
@@ -16,12 +16,11 @@ const requireDependencies = ref(false);
 watch(
   () => route.query.phase,
   (queryPhase) => {
-    const normalized = Array.isArray(queryPhase)
-      ? queryPhase.map((value) => String(value))
-      : queryPhase
-        ? [String(queryPhase)]
-        : [];
-    selectedPhases.value = normalized;
+    selectedPhases.value = Array.isArray(queryPhase)
+        ? queryPhase.map((value) => String(value))
+        : queryPhase
+            ? [String(queryPhase)]
+            : [];
   },
   { immediate: true }
 );
@@ -102,11 +101,9 @@ const filteredMetrics = computed(() => {
       return false;
     }
 
-    if (requireDependencies.value && !(metric.depends_on?.length ?? 0)) {
-      return false;
-    }
+    return !(requireDependencies.value && !(metric.depends_on?.length ?? 0));
 
-    return true;
+
   });
 });
 
