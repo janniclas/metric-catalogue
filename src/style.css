@@ -188,7 +188,8 @@ a {
 }
 
 button,
-.panel-actions a {
+.panel-actions a,
+.navbar__links a.ghost {
   border: none;
   border-radius: 999px;
   font-family: "Space Grotesk", sans-serif;
@@ -214,14 +215,16 @@ button.primary:hover,
 }
 
 button.ghost,
-.panel-actions a.ghost {
+.panel-actions a.ghost,
+.navbar__links a.ghost {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--ink);
 }
 
 button.ghost:hover,
-.panel-actions a.ghost:hover {
+.panel-actions a.ghost:hover,
+.navbar__links a.ghost:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(21, 19, 17, 0.08);
 }

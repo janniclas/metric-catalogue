@@ -50,6 +50,10 @@
 - Fixed phase filter interaction so it remains clickable alongside URL preselection.
 - Migrated UI tests to `@testing-library/vue` + `happy-dom`.
 - Added a shared metrics cache in `useMetricsCatalogue` to prevent duplicate fetches.
+- Implemented the issue-form-based “Propose a metric” flow and automation:
+  - Issue form at `.github/ISSUE_TEMPLATE/metric.yml`.
+  - Action at `.github/workflows/metric-proposal.yml` to create PRs.
+  - Script at `scripts/issue-to-metric.mjs` to generate metric markdown files.
 
 ## Requirements Added
 - The full metrics list lives in its own route (`/metrics`).

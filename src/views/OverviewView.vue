@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
+import { getProposeMetricUrl } from "../lib/proposeMetric";
 import type { Metric } from "../lib/metrics";
 
 const { phases, metrics, loading, error, formattedUpdatedAt } = useMetricsCatalogue();
+const proposeMetricUrl = getProposeMetricUrl();
 
 const metricPhaseById = computed(() => {
   const map = new Map<string, string>();
@@ -72,7 +74,14 @@ const topLevelByPhase = computed(() => {
           <p>Start here for a high-level view of the security metrics aligned to each SSDLC phase.</p>
           <div class="panel-actions">
             <router-link class="primary" to="/metrics">View all metrics</router-link>
-            <button class="ghost" type="button">Propose a metric</button>
+            <a
+              class="ghost"
+              :href="proposeMetricUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Propose a metric
+            </a>
           </div>
         </div>
       </div>

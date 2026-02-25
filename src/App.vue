@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import { getProposeMetricUrl } from "./lib/proposeMetric";
+
+const proposeMetricUrl = getProposeMetricUrl();
 </script>
 
 <template>
@@ -12,7 +15,14 @@ import { RouterLink, RouterView } from "vue-router";
       <div class="navbar__links">
         <RouterLink to="/" class="nav-link" active-class="nav-link--active" end>Overview</RouterLink>
         <RouterLink to="/metrics" class="nav-link" active-class="nav-link--active">Metrics</RouterLink>
-        <button class="ghost" type="button">Propose a metric</button>
+        <a
+          class="ghost"
+          :href="proposeMetricUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Propose a metric
+        </a>
       </div>
     </nav>
     <main class="app-content">

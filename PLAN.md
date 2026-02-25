@@ -41,10 +41,18 @@
 1. Links to related tools and references.
 
 ## Contribution And PR Flow
-- Provide a “Propose a metric” form in the UI.
-- Generate a metric Markdown file from form data using the template.
-- Use a pre-filled “Create PR” link that opens GitHub with the new file content.
-- Add a PR template in `.github/PULL_REQUEST_TEMPLATE.md` aligned with the metric template.
+### Issue-Driven Workflow (No Git Required)
+1. UI links to a GitHub Issue Form (`/issues/new?template=metric.yml`) for structured input.
+1. User submits the issue; it receives label `metric-proposal`.
+1. GitHub Action triggers on `issues.opened` and label.
+1. Action parses the issue body, generates a metric markdown file, creates a branch, commits, and opens a PR.
+1. Maintainers review and merge the PR.
+
+### Required Repo Assets
+1. Issue Form in `.github/ISSUE_TEMPLATE/metric.yml`.
+1. Automation workflow in `.github/workflows/metric-proposal.yml`.
+1. Parser script (e.g., `scripts/issue-to-metric.mjs`) to turn issue content into metric files.
+1. Optional PR template in `.github/PULL_REQUEST_TEMPLATE.md`.
 
 ## Implementation Steps
 1. Repository Setup And Structure
