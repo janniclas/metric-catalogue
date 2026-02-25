@@ -33,8 +33,10 @@ jobs:
       - name: Generate metric file
         id: generate
         run: |
-          node --import tsx scripts/issue-to-metric.ts --issue-file /tmp/issue.md --metrics-dir metrics > /tmp/result.env
+          node --import tsx scripts/issue-to-metric.ts --issue-file /tmp/issue.md --metrics-dir metrics --issue-number $ISSUE_NUMBER > /tmp/result.env
           cat /tmp/result.env >> $GITHUB_ENV
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Create branch and commit
         run: |

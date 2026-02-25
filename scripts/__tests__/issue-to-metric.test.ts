@@ -77,6 +77,8 @@ test("issue-to-metric generates a markdown metric file", async () => {
     issuePath,
     "--metrics-dir",
     metricsDir,
+    "--issue-number",
+    "123",
   ]);
 
   assert.equal(code, 0, stderr);
@@ -85,7 +87,11 @@ test("issue-to-metric generates a markdown metric file", async () => {
   assert.ok(outputLines.some((line) => line.startsWith("METRIC_PATH=")));
   assert.ok(outputLines.some((line) => line.startsWith("BRANCH_NAME=")));
 
-  const metricPath = path.join(metricsDir, "plan-security-requirements-coverage.md");
+  const metricPath = path.join(
+    metricsDir,
+    "plan",
+    "plan-security-requirements-coverage.md"
+  );
   const content = await fs.readFile(metricPath, "utf8");
 
   assert.match(content, /id: plan-security-requirements-coverage/);
@@ -100,6 +106,7 @@ test("issue-to-metric generates a markdown metric file", async () => {
   assert.match(content, /# Measurement/);
   assert.match(content, /# Rationale/);
   assert.match(content, /# Notes/);
+  assert.ok(stdout.includes("BRANCH_NAME=metric/123-plan-security-requirements-coverage"));
 });
 
 test("issue-to-metric rejects invalid metric id", async () => {
@@ -115,6 +122,8 @@ test("issue-to-metric rejects invalid metric id", async () => {
     issuePath,
     "--metrics-dir",
     metricsDir,
+    "--issue-number",
+    "999",
   ]);
 
   assert.notEqual(code, 0);
@@ -134,6 +143,8 @@ test("issue-to-metric rejects missing required fields", async () => {
     issuePath,
     "--metrics-dir",
     metricsDir,
+    "--issue-number",
+    "999",
   ]);
 
   assert.notEqual(code, 0);

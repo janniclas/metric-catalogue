@@ -136,6 +136,7 @@ async function main() {
   const args = process.argv.slice(2);
   const issueFileIndex = args.indexOf("--issue-file");
   const metricsDirIndex = args.indexOf("--metrics-dir");
+  const issueNumberIndex = args.indexOf("--issue-number");
 
   if (issueFileIndex === -1) {
     throw new Error("--issue-file is required");
@@ -143,6 +144,7 @@ async function main() {
 
   const issueFile = args[issueFileIndex + 1];
   const metricsDir = metricsDirIndex === -1 ? "metrics" : args[metricsDirIndex + 1];
+  const issueNumber = issueNumberIndex === -1 ? "unknown" : args[issueNumberIndex + 1];
 
   const body = await fs.readFile(issueFile, "utf8");
   const sections = parseSections(body);
@@ -169,7 +171,9 @@ async function main() {
   ensureId(data.id);
 
   const fileName = `${data.id}.md`;
-  const filePath = path.join(metricsDir, fileName);
+  const phaseDir = data.phase.toLowerCase().replace(/\s+/g, "-");
+  const filePath = path.join(metricsDir, phaseDir, fileName);
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
   try {
     await fs.access(filePath);
     throw new Error(`Metric file already exists: ${fileName}`);
@@ -185,7 +189,7 @@ async function main() {
 
   await fs.writeFile(filePath, content, "utf8");
 
-  const branchName = `metric/${data.id}`;
+  const branchName = `metric/${issueNumber}-${data.id}`;
 
   console.log(`METRIC_ID=${data.id}`);
   console.log(`METRIC_PATH=${filePath}`);
