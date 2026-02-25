@@ -1,4 +1,4 @@
-const REPO_URL = "https://github.com/fraunhofer-iem/spha";
+const REPO_URL = "https://github.com/janniclas/metric-catalogue";
 const ISSUE_TEMPLATE = "metric.yml";
 
 export function getProposeMetricUrl(): string {
