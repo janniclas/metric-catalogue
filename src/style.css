@@ -284,9 +284,10 @@ button.ghost:hover,
 }
 
 .phase-card--link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 22px 46px rgba(28, 26, 23, 0.14);
-  border-color: rgba(20, 107, 143, 0.3);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 28px 60px rgba(20, 107, 143, 0.22);
+  border-color: rgba(20, 107, 143, 0.45);
+  background: linear-gradient(135deg, rgba(20, 107, 143, 0.08), rgba(240, 93, 35, 0.06));
 }
 
 .phase-card__header {
@@ -305,6 +306,10 @@ button.ghost:hover,
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.phase-card--link:hover .phase-card__icon {
+  background:  var(--bg-card);
 }
 
 .phase-card__meta {
