@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import OverviewView from "../OverviewView.vue";
 import { metricsIndexFixture } from "../../test/fixtures/metricsIndex";
-import { mockFetch, mountWithRouter, waitFor } from "../../test/utils";
+import { mockFetch, renderWithRouter } from "../../test/utils";
 
 const overviewRoute = {
   path: "/",
@@ -19,15 +19,12 @@ beforeEach(() => {
 
 describe("OverviewView", () => {
   it("links phase cards to metrics with preselected phase", async () => {
-    const { wrapper } = await mountWithRouter(OverviewView, {
+    const { findByRole } = await renderWithRouter(OverviewView, {
       route: "/",
       routes: [overviewRoute, metricsRoute],
     });
 
-    await waitFor(() => wrapper.text().includes("Plan"));
-    const planLink = wrapper
-      .findAll("a")
-      .find((node) => node.attributes("href") === "/metrics?phase=plan");
-    expect(planLink).toBeTruthy();
+    const planLink = await findByRole("link", { name: /Plan/i });
+    expect(planLink.getAttribute("href")).toBe("/metrics?phase=plan");
   });
 });

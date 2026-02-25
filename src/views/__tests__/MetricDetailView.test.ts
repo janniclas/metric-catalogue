@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import MetricDetailView from "../MetricDetailView.vue";
 import { metricsIndexFixture } from "../../test/fixtures/metricsIndex";
-import { mockFetch, mountWithRouter, waitFor } from "../../test/utils";
+import { mockFetch, renderWithRouter } from "../../test/utils";
 
 const detailRoute = {
   path: "/metrics/:id",
@@ -21,24 +21,21 @@ beforeEach(() => {
 
 describe("MetricDetailView", () => {
   it("renders markdown, related metrics, and source link", async () => {
-    const { wrapper } = await mountWithRouter(MetricDetailView, {
+    const { findByText, getByRole } = await renderWithRouter(MetricDetailView, {
       route: "/metrics/plan-security-requirements-coverage",
       routes: [detailRoute, listRoute],
     });
 
-    await waitFor(() => wrapper.text().includes("Security Requirements Coverage"));
-    expect(wrapper.text()).toContain("Security Requirements Coverage");
-    expect(wrapper.text()).toContain("Measure security requirements coverage.");
+    await findByText("Security Requirements Coverage");
+    await findByText("Measure security requirements coverage.");
 
-    const relatedLink = wrapper
-      .findAll("a")
-      .find((node) => node.text().trim() === "Threat Model Coverage");
-    expect(relatedLink?.attributes("href")).toBe("/metrics/plan-threat-model-coverage");
+    const relatedLink = getByRole("link", { name: "Threat Model Coverage" });
+    expect(relatedLink.getAttribute("href")).toBe("/metrics/plan-threat-model-coverage");
 
-    const sourceLink = wrapper
-      .findAll("a")
-      .find((node) => node.text().trim() === "metrics/plan-security-requirements-coverage.md");
-    expect(sourceLink?.attributes("href")).toBe(
+    const sourceLink = getByRole("link", {
+      name: "metrics/plan-security-requirements-coverage.md",
+    });
+    expect(sourceLink.getAttribute("href")).toBe(
       "https://github.com/example/metric-catalogue/blob/main/metrics/plan-security-requirements-coverage.md"
     );
   });

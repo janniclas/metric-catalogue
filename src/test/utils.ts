@@ -1,9 +1,9 @@
-import { mount } from "@vue/test-utils";
+import { render } from "@testing-library/vue";
 import { createMemoryHistory, createRouter, type Router, type RouteRecordRaw } from "vue-router";
 import { vi } from "vitest";
 import { nextTick } from "vue";
 
-export async function mountWithRouter(
+export async function renderWithRouter(
   component: any,
   {
     route = "/",
@@ -20,7 +20,7 @@ export async function mountWithRouter(
 
   return {
     router,
-    wrapper: mount(component, {
+    ...render(component, {
       global: {
         plugins: [router],
       },

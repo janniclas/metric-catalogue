@@ -1,7 +1,8 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import { fireEvent } from "@testing-library/vue";
 import MetricsView from "../MetricsView.vue";
 import { metricsIndexFixture } from "../../test/fixtures/metricsIndex";
-import { mockFetch, mountWithRouter, waitFor } from "../../test/utils";
+import { mockFetch, renderWithRouter, waitFor } from "../../test/utils";
 
 const metricsRoute = {
   path: "/metrics",
@@ -19,40 +20,44 @@ beforeEach(() => {
 
 describe("MetricsView", () => {
   it("preselects phase filter from the URL and allows toggling", async () => {
-    const { wrapper } = await mountWithRouter(MetricsView, {
+    const { findAllByTestId, getByLabelText, getAllByTestId } = await renderWithRouter(
+      MetricsView,
+      {
       route: "/metrics?phase=plan",
       routes: [metricsRoute, detailRoute],
-    });
+      }
+    );
 
-    await waitFor(() => wrapper.findAll("[data-testid='metric-card']").length > 0);
-
-    const cards = wrapper.findAll("[data-testid='metric-card']");
+    const cards = await findAllByTestId("metric-card");
     expect(cards).toHaveLength(2);
 
-    const planCheckbox = wrapper.find("input[type='checkbox'][value='plan']");
-    expect((planCheckbox.element as HTMLInputElement).checked).toBe(true);
+    const planCheckbox = getByLabelText("Plan") as HTMLInputElement;
+    expect(planCheckbox.checked).toBe(true);
 
-    const codeCheckbox = wrapper.find("input[type='checkbox'][value='code']");
-    await codeCheckbox.setValue(true);
-    await waitFor(() => wrapper.findAll("[data-testid='metric-card']").length === 3);
+    const codeCheckbox = getByLabelText("Code") as HTMLInputElement;
+    await fireEvent.click(codeCheckbox);
+    await waitFor(() => getAllByTestId("metric-card").length === 3);
 
-    const updatedCards = wrapper.findAll("[data-testid='metric-card']");
+    const updatedCards = getAllByTestId("metric-card");
     expect(updatedCards).toHaveLength(3);
   });
 
   it("searches across tools and tags", async () => {
-    const { wrapper } = await mountWithRouter(MetricsView, {
+    const { findAllByTestId, getByLabelText, getAllByTestId } = await renderWithRouter(
+      MetricsView,
+      {
       route: "/metrics",
       routes: [metricsRoute, detailRoute],
-    });
+      }
+    );
 
-    await waitFor(() => wrapper.findAll("[data-testid='metric-card']").length > 0);
+    await findAllByTestId("metric-card");
 
-    const searchInput = wrapper.find("input[type='search']");
-    await searchInput.setValue("snyk");
-    await waitFor(() => wrapper.findAll("[data-testid='metric-card']").length === 1);
+    const searchInput = getByLabelText("Search") as HTMLInputElement;
+    await fireEvent.update(searchInput, "snyk");
+    await waitFor(() => getAllByTestId("metric-card").length === 1);
 
-    const filteredCards = wrapper.findAll("[data-testid='metric-card']");
+    const filteredCards = getAllByTestId("metric-card");
     expect(filteredCards).toHaveLength(1);
   });
 });
