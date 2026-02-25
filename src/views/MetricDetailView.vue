@@ -129,7 +129,7 @@ const sourceUrl = computed(() => {
           <h3>References</h3>
           <ul>
             <li v-for="reference in metric.references ?? []" :key="reference">
-              <a :href="reference" target="_blank" rel="noreferrer">{{ reference }}</a>
+              <a :href="reference" target="_blank" rel="noopener noreferrer">{{ reference }}</a>
             </li>
             <li v-if="!metric.references?.length">No references.</li>
           </ul>
@@ -137,7 +137,7 @@ const sourceUrl = computed(() => {
         <div>
           <h3>Source file</h3>
           <p v-if="sourceUrl">
-            <a :href="sourceUrl" target="_blank" rel="noreferrer">{{ metric.source_path }}</a>
+            <a :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ metric.source_path }}</a>
           </p>
           <p v-else><code>{{ metric.source_path }}</code></p>
         </div>

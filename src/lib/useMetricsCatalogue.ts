@@ -1,19 +1,35 @@
 import { computed, onMounted, ref } from "vue";
 import { loadMetricsIndex, type Metric, type MetricsIndex, type Phase } from "./metrics";
 
-export function useMetricsCatalogue() {
-  const metricsIndex = ref<MetricsIndex | null>(null);
-  const loading = ref(true);
-  const error = ref<string | null>(null);
+const metricsIndex = ref<MetricsIndex | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+let inflight: Promise<MetricsIndex> | null = null;
 
-  onMounted(async () => {
-    try {
-      metricsIndex.value = await loadMetricsIndex();
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : "Failed to load metrics.";
-    } finally {
-      loading.value = false;
-    }
+async function ensureLoaded() {
+  if (metricsIndex.value) return;
+  if (inflight) {
+    await inflight;
+    return;
+  }
+
+  loading.value = true;
+  error.value = null;
+  inflight = loadMetricsIndex();
+
+  try {
+    metricsIndex.value = await inflight;
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : "Failed to load metrics.";
+  } finally {
+    loading.value = false;
+    inflight = null;
+  }
+}
+
+export function useMetricsCatalogue() {
+  onMounted(() => {
+    void ensureLoaded();
   });
 
   const phases = computed<Phase[]>(() => metricsIndex.value?.phases ?? []);
@@ -35,5 +51,9 @@ export function useMetricsCatalogue() {
     phases,
     metrics,
     formattedUpdatedAt,
+    reload: async () => {
+      metricsIndex.value = null;
+      await ensureLoaded();
+    },
   };
 }
