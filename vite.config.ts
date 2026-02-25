@@ -5,4 +5,11 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   base: process.env.VITE_BASE_PATH ?? '/',
   plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    clearMocks: true,
+    include: ['src/**/*.test.ts'],
+    exclude: ['node_modules/**', 'dist/**', 'scripts/**'],
+  },
 })

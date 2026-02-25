@@ -212,6 +212,7 @@ function clearFilters() {
           :key="metric.id"
           :to="`/metrics/${metric.id}`"
           class="metric-card"
+          data-testid="metric-card"
         >
           <header>
             <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
