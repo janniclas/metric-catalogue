@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import fm from "front-matter";
+import matter from "gray-matter";
 import { z } from "zod";
 
 const PhaseSchema = z
@@ -39,11 +39,11 @@ const MetricSchema = z
 const ignoreDirs = new Set(["templates"]);
 const ignoreFiles = new Set(["README.md"]);
 
-const toPosixPath = (value) => value.split(path.sep).join("/");
+const toPosixPath = (value: string) => value.split(path.sep).join("/");
 
-async function collectMarkdownFiles(dir) {
+async function collectMarkdownFiles(dir: string) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = [];
+  const files: string[] = [];
 
   for (const entry of entries) {
     if (entry.name.startsWith(".")) {
@@ -71,8 +71,8 @@ async function collectMarkdownFiles(dir) {
   return files;
 }
 
-function assertUnique(values, label) {
-  const seen = new Set();
+function assertUnique(values: string[], label: string) {
+  const seen = new Set<string>();
   for (const value of values) {
     if (seen.has(value)) {
       throw new Error(`Duplicate ${label}: ${value}`);
@@ -81,7 +81,7 @@ function assertUnique(values, label) {
   }
 }
 
-async function loadPhases(phasesPath) {
+async function loadPhases(phasesPath: string) {
   const raw = await fs.readFile(phasesPath, "utf8");
   const phases = PhasesSchema.parse(JSON.parse(raw));
   assertUnique(
@@ -91,16 +91,30 @@ async function loadPhases(phasesPath) {
   return phases.sort((a, b) => a.order - b.order);
 }
 
-async function loadMetrics({ repoRoot, metricsDir, phases }) {
+async function loadMetrics({
+  repoRoot,
+  metricsDir,
+  phases,
+}: {
+  repoRoot: string;
+  metricsDir: string;
+  phases: Array<{
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    order: number;
+  }>;
+}) {
   const phaseIds = new Set(phases.map((phase) => phase.id));
   const files = await collectMarkdownFiles(metricsDir);
-  const metrics = [];
+  const metrics: Array<Record<string, unknown>> = [];
 
   for (const filePath of files) {
     const raw = await fs.readFile(filePath, "utf8");
-    const parsed = fm(raw);
-    const attributes = MetricSchema.parse(parsed.attributes ?? {});
-    const body = parsed.body.trim();
+    const parsed = matter(raw);
+    const attributes = MetricSchema.parse(parsed.data ?? {});
+    const body = parsed.content.trim();
 
     if (!body) {
       throw new Error(`Metric body is empty: ${filePath}`);
@@ -120,20 +134,23 @@ async function loadMetrics({ repoRoot, metricsDir, phases }) {
   }
 
   assertUnique(
-    metrics.map((metric) => metric.id),
+    metrics.map((metric) => metric.id as string),
     "metric id"
   );
 
-  const metricIds = new Set(metrics.map((metric) => metric.id));
+  const metricIds = new Set(metrics.map((metric) => metric.id as string));
   for (const metric of metrics) {
-    for (const dependency of metric.depends_on ?? []) {
+    const dependsOn = (metric.depends_on as string[] | undefined) ?? [];
+    for (const dependency of dependsOn) {
       if (!metricIds.has(dependency)) {
         throw new Error(`Metric '${metric.id}' depends on unknown id '${dependency}'.`);
       }
     }
   }
 
-  return metrics.sort((a, b) => a.title.localeCompare(b.title));
+  return metrics.sort((a, b) =>
+    String(a.title ?? "").localeCompare(String(b.title ?? ""))
+  );
 }
 
 export async function buildMetricsIndex({
@@ -142,6 +159,12 @@ export async function buildMetricsIndex({
   phasesPath,
   outputDir,
   outputPath,
+}: {
+  repoRoot?: string;
+  metricsDir?: string;
+  phasesPath?: string;
+  outputDir?: string;
+  outputPath?: string;
 } = {}) {
   const resolvedRepoRoot = repoRoot ?? process.cwd();
   const resolvedMetricsDir = metricsDir ?? path.join(resolvedRepoRoot, "metrics");

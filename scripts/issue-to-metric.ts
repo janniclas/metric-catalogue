@@ -4,23 +4,8 @@ import path from "node:path";
 const SECTION_REGEX = /^###\s+(.+)\n([\s\S]*?)(?=\n###\s+|\n?$)/gm;
 const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const SECTION_KEYS = {
-  "Metric title": "title",
-  "Metric id": "id",
-  "SSDLC phase": "phase",
-  "Description": "description",
-  "Measurement": "measurement",
-  "Rationale": "rationale",
-  "Tags (comma-separated)": "tags",
-  "Related tools (comma-separated)": "related_tools",
-  "Depends on (comma-separated metric ids)": "depends_on",
-  "Thresholds (one per line)": "thresholds",
-  "References (one URL per line)": "references",
-  "Notes": "notes",
-};
-
-function parseSections(body) {
-  const sections = {};
+function parseSections(body: string) {
+  const sections: Record<string, string> = {};
   for (const match of body.matchAll(SECTION_REGEX)) {
     const label = match[1].trim();
     const value = match[2].trim();
@@ -29,7 +14,7 @@ function parseSections(body) {
   return sections;
 }
 
-function parseList(value) {
+function parseList(value: string) {
   if (!value) return [];
   return value
     .split(",")
@@ -37,7 +22,7 @@ function parseList(value) {
     .filter(Boolean);
 }
 
-function parseLines(value) {
+function parseLines(value: string) {
   if (!value) return [];
   return value
     .split("\n")
@@ -45,7 +30,7 @@ function parseLines(value) {
     .filter(Boolean);
 }
 
-function parseThresholds(value) {
+function parseThresholds(value: string) {
   const lines = parseLines(value);
   return lines.map((line) => {
     const [name, val, desc] = line.split("|").map((part) => part.trim());
@@ -60,13 +45,22 @@ function parseThresholds(value) {
   });
 }
 
-function ensureId(id) {
+function ensureId(id: string) {
   if (!id || !ID_PATTERN.test(id)) {
     throw new Error("Metric id must be kebab-case (lowercase letters, numbers, hyphens).");
   }
 }
 
-function buildFrontmatter(data) {
+function buildFrontmatter(data: {
+  id: string;
+  title: string;
+  phase: string;
+  tags: string[];
+  related_tools: string[];
+  depends_on: string[];
+  thresholds: Array<{ name: string; value: string; description?: string }>;
+  references: string[];
+}) {
   const lines = ["---"];
   lines.push(`id: ${data.id}`);
   lines.push(`title: ${data.title}`);
@@ -115,7 +109,12 @@ function buildFrontmatter(data) {
   return lines.join("\n");
 }
 
-function buildBody(data) {
+function buildBody(data: {
+  description: string;
+  measurement?: string;
+  rationale?: string;
+  notes?: string;
+}) {
   const sections = ["# Description", data.description || "TBD"];
 
   if (data.measurement) {
@@ -175,7 +174,7 @@ async function main() {
     await fs.access(filePath);
     throw new Error(`Metric file already exists: ${fileName}`);
   } catch (err) {
-    if (err?.code !== "ENOENT") {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
       throw err;
     }
   }

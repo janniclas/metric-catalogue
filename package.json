@@ -5,16 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "metrics:build": "node scripts/build-metrics-index.mjs",
-    "build": "npm run metrics:build && vue-tsc -b && vite build",
-    "test:node": "node --test scripts/__tests__/*.mjs",
+    "metrics:build": "tsx scripts/build-metrics-index.ts",
+    "build": "npm run metrics:build && vue-tsc -p tsconfig.app.json && vite build",
+    "test:node": "NODE_OPTIONS=--import=tsx node --test scripts/__tests__/*.ts",
     "test:ui": "vitest run",
     "test": "npm run test:node && npm run test:ui",
     "preview": "vite preview"
   },
   "dependencies": {
     "dompurify": "3.3.1",
-    "front-matter": "4.0.2",
+    "gray-matter": "4.0.3",
     "marked": "17.0.3",
     "vue": "3.5.29",
     "vue-router": "5.0.3"
@@ -25,6 +25,7 @@
     "@vitejs/plugin-vue": "6.0.4",
     "@vue/tsconfig": "0.8.1",
     "happy-dom": "20.7.0",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vite": "8.0.0-beta.13",
     "vitest": "4.0.18",

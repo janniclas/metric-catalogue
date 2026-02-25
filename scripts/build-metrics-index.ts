@@ -1,5 +1,5 @@
 import path from "node:path";
-import { buildMetricsIndex } from "./metrics-index.mjs";
+import { buildMetricsIndex } from "./metrics-index.ts";
 
 async function main() {
   const { payload, outputPath } = await buildMetricsIndex();

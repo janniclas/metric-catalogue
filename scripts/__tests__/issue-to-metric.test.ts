@@ -1,15 +1,15 @@
-import { test } from "node:test";
-import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import assert from "node:assert/strict";
+import test from "node:test";
 
-const scriptPath = path.resolve("scripts/issue-to-metric.mjs");
+const scriptPath = path.resolve("scripts/issue-to-metric.ts");
 
-function runScript(args, { cwd } = {}) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [scriptPath, ...args], {
+function runScript(args: string[], { cwd }: { cwd?: string } = {}) {
+  return new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve, reject) => {
+    const child = spawn(process.execPath, ["--import", "tsx", scriptPath, ...args], {
       cwd,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -31,7 +31,7 @@ function runScript(args, { cwd } = {}) {
   });
 }
 
-function issueBody(overrides = {}) {
+function issueBody(overrides: Partial<Record<string, string>> = {}) {
   const values = {
     title: "Security Requirements Coverage",
     id: "plan-security-requirements-coverage",
@@ -48,7 +48,8 @@ function issueBody(overrides = {}) {
     ...overrides,
   };
 
-  return `### Metric title\n${values.title}\n\n` +
+  return (
+    `### Metric title\n${values.title}\n\n` +
     `### Metric id\n${values.id}\n\n` +
     `### SSDLC phase\n${values.phase}\n\n` +
     `### Description\n${values.description}\n\n` +
@@ -59,7 +60,8 @@ function issueBody(overrides = {}) {
     `### Depends on (comma-separated metric ids)\n${values.depends_on}\n\n` +
     `### Thresholds (one per line)\n${values.thresholds}\n\n` +
     `### References (one URL per line)\n${values.references}\n\n` +
-    `### Notes\n${values.notes}\n`;
+    `### Notes\n${values.notes}\n`
+  );
 }
 
 test("issue-to-metric generates a markdown metric file", async () => {
