@@ -61,87 +61,89 @@ const sourceUrl = computed(() => {
 </script>
 
 <template>
-  <section class="metric-detail">
-    <RouterLink class="back-link" to="/metrics">← Back to all metrics</RouterLink>
+  <section class="metric-detail section section--light">
+    <div class="container">
+      <RouterLink class="back-link" to="/metrics">← Back to all metrics</RouterLink>
 
-    <div v-if="loading" class="state">Loading metric…</div>
-    <div v-else-if="error" class="state state--error">{{ error }}</div>
-    <div v-else-if="!metric" class="state">Metric not found.</div>
+      <div v-if="loading" class="state">Loading metric…</div>
+      <div v-else-if="error" class="state state--error">{{ error }}</div>
+      <div v-else-if="!metric" class="state">Metric not found.</div>
 
-    <div v-else class="metric-detail__content">
-      <header class="metric-detail__header">
-        <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
-        <h1>{{ metric.title }}</h1>
-        <p class="metric-id">{{ metric.id }}</p>
-      </header>
+      <div v-else class="metric-detail__content">
+        <header class="metric-detail__header">
+          <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
+          <h1>{{ metric.title }}</h1>
+          <p class="metric-id">{{ metric.id }}</p>
+        </header>
 
-      <div class="metric-detail__meta">
-        <div>
-          <span class="meta-label">Tags</span>
-          <p>{{ metric.tags?.join(", ") || "—" }}</p>
+        <div class="metric-detail__meta">
+          <div>
+            <span class="meta-label">Tags</span>
+            <p>{{ metric.tags?.join(", ") || "—" }}</p>
+          </div>
+          <div>
+            <span class="meta-label">Tools</span>
+            <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
+          </div>
+          <div>
+            <span class="meta-label">Thresholds</span>
+            <p>{{ metric.thresholds?.length ?? 0 }}</p>
+          </div>
+          <div>
+            <span class="meta-label">Depends on</span>
+            <p>{{ metric.depends_on?.length ?? 0 }}</p>
+          </div>
         </div>
-        <div>
-          <span class="meta-label">Tools</span>
-          <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
-        </div>
-        <div>
-          <span class="meta-label">Thresholds</span>
-          <p>{{ metric.thresholds?.length ?? 0 }}</p>
-        </div>
-        <div>
-          <span class="meta-label">Depends on</span>
-          <p>{{ metric.depends_on?.length ?? 0 }}</p>
-        </div>
+
+        <section class="metric-detail__body" v-html="renderedMarkdown"></section>
+
+        <section class="metric-detail__extras">
+          <div>
+            <h3>Thresholds</h3>
+            <ul>
+              <li v-for="threshold in metric.thresholds ?? []" :key="threshold.name">
+                <strong>{{ threshold.name }}:</strong> {{ threshold.value }}
+                <span v-if="threshold.description"> — {{ threshold.description }}</span>
+              </li>
+              <li v-if="!metric.thresholds?.length">No thresholds defined.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Dependencies</h3>
+            <ul>
+              <li v-for="dependency in dependencyList" :key="dependency">
+                <RouterLink :to="`/metrics/${dependency}`">{{ dependency }}</RouterLink>
+              </li>
+              <li v-if="dependencyList.length === 0">No dependencies.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Related metrics</h3>
+            <ul>
+              <li v-for="related in relatedMetrics" :key="related.id">
+                <RouterLink :to="`/metrics/${related.id}`">{{ related.title }}</RouterLink>
+              </li>
+              <li v-if="relatedMetrics.length === 0">No related metrics yet.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>References</h3>
+            <ul>
+              <li v-for="reference in metric.references ?? []" :key="reference">
+                <a :href="reference" target="_blank" rel="noopener noreferrer">{{ reference }}</a>
+              </li>
+              <li v-if="!metric.references?.length">No references.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Source file</h3>
+            <p v-if="sourceUrl">
+              <a :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ metric.source_path }}</a>
+            </p>
+            <p v-else><code>{{ metric.source_path }}</code></p>
+          </div>
+        </section>
       </div>
-
-      <section class="metric-detail__body" v-html="renderedMarkdown"></section>
-
-      <section class="metric-detail__extras">
-        <div>
-          <h3>Thresholds</h3>
-          <ul>
-            <li v-for="threshold in metric.thresholds ?? []" :key="threshold.name">
-              <strong>{{ threshold.name }}:</strong> {{ threshold.value }}
-              <span v-if="threshold.description"> — {{ threshold.description }}</span>
-            </li>
-            <li v-if="!metric.thresholds?.length">No thresholds defined.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Dependencies</h3>
-          <ul>
-            <li v-for="dependency in dependencyList" :key="dependency">
-              <RouterLink :to="`/metrics/${dependency}`">{{ dependency }}</RouterLink>
-            </li>
-            <li v-if="dependencyList.length === 0">No dependencies.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Related metrics</h3>
-          <ul>
-            <li v-for="related in relatedMetrics" :key="related.id">
-              <RouterLink :to="`/metrics/${related.id}`">{{ related.title }}</RouterLink>
-            </li>
-            <li v-if="relatedMetrics.length === 0">No related metrics yet.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>References</h3>
-          <ul>
-            <li v-for="reference in metric.references ?? []" :key="reference">
-              <a :href="reference" target="_blank" rel="noopener noreferrer">{{ reference }}</a>
-            </li>
-            <li v-if="!metric.references?.length">No references.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Source file</h3>
-          <p v-if="sourceUrl">
-            <a :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ metric.source_path }}</a>
-          </p>
-          <p v-else><code>{{ metric.source_path }}</code></p>
-        </div>
-      </section>
     </div>
   </section>
 </template>

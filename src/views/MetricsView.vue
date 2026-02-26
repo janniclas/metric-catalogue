@@ -12,6 +12,12 @@ const selectedTags = ref<string[]>([]);
 const selectedTools = ref<string[]>([]);
 const requireThresholds = ref(false);
 const requireDependencies = ref(false);
+const openFilters = ref({
+  phases: true,
+  tags: false,
+  tools: false,
+  other: false,
+});
 
 watch(
   () => route.query.phase,
@@ -120,121 +126,177 @@ function clearFilters() {
   requireThresholds.value = false;
   requireDependencies.value = false;
 }
+
+function toggleFilter(key: keyof typeof openFilters.value) {
+  openFilters.value[key] = !openFilters.value[key];
+}
 </script>
 
 <template>
-  <section class="metrics-section">
-    <div class="section-header">
-      <div>
-        <p class="eyebrow">Catalogue</p>
-        <h2>All metrics</h2>
+  <section class="metrics-section section section--light">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Catalogue</p>
+          <h2>All metrics</h2>
+        </div>
+        <div class="section-subtitle">
+          <p>Filter by phase, tags, tools, or dependencies. Matches any selected tag or tool.</p>
+          <p class="count" v-if="filteredCountLabel">{{ filteredCountLabel }}</p>
+        </div>
       </div>
-      <div class="section-subtitle">
-        <p>Filter by phase, tags, tools, or dependencies. Matches any selected tag or tool.</p>
-        <p class="count" v-if="filteredCountLabel">{{ filteredCountLabel }}</p>
-      </div>
-    </div>
 
-    <div v-if="loading" class="state">Loading metrics catalogue…</div>
-    <div v-else-if="error" class="state state--error">{{ error }}</div>
-    <div v-else class="metrics-layout">
-      <aside class="filters">
-        <label class="search">
-          <span>Search</span>
-          <input v-model="search" type="search" placeholder="Search by title, id, or description" />
-        </label>
+      <div v-if="loading" class="state">Loading metrics catalogue…</div>
+      <div v-else-if="error" class="state state--error">{{ error }}</div>
+      <div v-else class="metrics-layout">
+        <aside class="filters">
+          <label class="search">
+            <span>Search</span>
+            <input v-model="search" type="search" placeholder="Search by title, id, or description" />
+          </label>
 
         <div class="filter-group">
-          <h3>Phases</h3>
-          <div class="option-grid">
+          <button
+            class="filter-toggle"
+            type="button"
+            @click="toggleFilter('phases')"
+            :aria-expanded="openFilters.phases"
+            aria-controls="filter-phases"
+          >
+            <span>Phases</span>
+            <span class="toggle-meta">
+              <span class="toggle-text">{{ openFilters.phases ? "Hide" : "Show" }}</span>
+              <span class="toggle-indicator" :class="openFilters.phases ? 'is-open' : ''">+</span>
+            </span>
+          </button>
+          <div id="filter-phases" class="option-grid" v-show="openFilters.phases">
             <label v-for="phase in phases" :key="phase.id" class="option">
               <input
                 type="checkbox"
-                v-model="selectedPhases"
-                :value="phase.id"
-              />
-              <span>{{ phase.name }}</span>
-            </label>
-          </div>
+                  v-model="selectedPhases"
+                  :value="phase.id"
+                />
+                <span>{{ phase.name }}</span>
+              </label>
+            </div>
         </div>
 
         <div class="filter-group">
-          <h3>Tags</h3>
-          <div class="option-grid">
+          <button
+            class="filter-toggle"
+            type="button"
+            @click="toggleFilter('tags')"
+            :aria-expanded="openFilters.tags"
+            aria-controls="filter-tags"
+          >
+            <span>Tags</span>
+            <span class="toggle-meta">
+              <span class="toggle-text">{{ openFilters.tags ? "Hide" : "Show" }}</span>
+              <span class="toggle-indicator" :class="openFilters.tags ? 'is-open' : ''">+</span>
+            </span>
+          </button>
+          <div id="filter-tags" class="option-grid" v-show="openFilters.tags">
             <label v-for="tag in availableTags" :key="tag" class="option">
               <input
-                type="checkbox"
-                v-model="selectedTags"
-                :value="tag"
-              />
-              <span>{{ tag }}</span>
-            </label>
-            <p v-if="availableTags.length === 0" class="empty">No tags yet.</p>
-          </div>
+                  type="checkbox"
+                  v-model="selectedTags"
+                  :value="tag"
+                />
+                <span>{{ tag }}</span>
+              </label>
+              <p v-if="availableTags.length === 0" class="empty">No tags yet.</p>
+            </div>
         </div>
 
         <div class="filter-group">
-          <h3>Related tools</h3>
-          <div class="option-grid">
+          <button
+            class="filter-toggle"
+            type="button"
+            @click="toggleFilter('tools')"
+            :aria-expanded="openFilters.tools"
+            aria-controls="filter-tools"
+          >
+            <span>Related tools</span>
+            <span class="toggle-meta">
+              <span class="toggle-text">{{ openFilters.tools ? "Hide" : "Show" }}</span>
+              <span class="toggle-indicator" :class="openFilters.tools ? 'is-open' : ''">+</span>
+            </span>
+          </button>
+          <div id="filter-tools" class="option-grid" v-show="openFilters.tools">
             <label v-for="tool in availableTools" :key="tool" class="option">
               <input
-                type="checkbox"
-                v-model="selectedTools"
-                :value="tool"
-              />
-              <span>{{ tool }}</span>
-            </label>
-            <p v-if="availableTools.length === 0" class="empty">No tools yet.</p>
-          </div>
+                  type="checkbox"
+                  v-model="selectedTools"
+                  :value="tool"
+                />
+                <span>{{ tool }}</span>
+              </label>
+              <p v-if="availableTools.length === 0" class="empty">No tools yet.</p>
+            </div>
         </div>
 
         <div class="filter-group">
-          <h3>Other</h3>
-          <label class="option">
-            <input type="checkbox" v-model="requireThresholds" />
-            <span>Has thresholds</span>
-          </label>
-          <label class="option">
-            <input type="checkbox" v-model="requireDependencies" />
-            <span>Has dependencies</span>
-          </label>
+          <button
+            class="filter-toggle"
+            type="button"
+            @click="toggleFilter('other')"
+            :aria-expanded="openFilters.other"
+            aria-controls="filter-other"
+          >
+            <span>Other</span>
+            <span class="toggle-meta">
+              <span class="toggle-text">{{ openFilters.other ? "Hide" : "Show" }}</span>
+              <span class="toggle-indicator" :class="openFilters.other ? 'is-open' : ''">+</span>
+            </span>
+          </button>
+          <div id="filter-other" class="option-grid" v-show="openFilters.other">
+            <label class="option">
+              <input type="checkbox" v-model="requireThresholds" />
+              <span>Has thresholds</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" v-model="requireDependencies" />
+              <span>Has dependencies</span>
+            </label>
+          </div>
         </div>
 
-        <button class="ghost" type="button" @click="clearFilters">Clear filters</button>
-      </aside>
+          <button class="ghost" type="button" @click="clearFilters">Clear filters</button>
+        </aside>
 
-      <div class="metrics-grid">
-        <router-link
-          v-for="metric in filteredMetrics"
-          :key="metric.id"
-          :to="`/metrics/${metric.id}`"
-          class="metric-card"
-          data-testid="metric-card"
-        >
-          <header>
-            <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
-            <h3>{{ metric.title }}</h3>
-            <p class="metric-id">{{ metric.id }}</p>
-          </header>
+        <div class="metrics-grid">
+          <router-link
+            v-for="metric in filteredMetrics"
+            :key="metric.id"
+            :to="`/metrics/${metric.id}`"
+            class="metric-card"
+            data-testid="metric-card"
+          >
+            <header>
+              <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
+              <h3>{{ metric.title }}</h3>
+              <p class="metric-id">{{ metric.id }}</p>
+            </header>
 
-          <div class="metric-meta">
-            <div>
-              <span class="meta-label">Tags</span>
-              <p>{{ metric.tags?.join(", ") || "—" }}</p>
+            <div class="metric-meta">
+              <div>
+                <span class="meta-label">Tags</span>
+                <p>{{ metric.tags?.join(", ") || "—" }}</p>
+              </div>
+              <div>
+                <span class="meta-label">Tools</span>
+                <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
+              </div>
             </div>
-            <div>
-              <span class="meta-label">Tools</span>
-              <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
+
+            <div class="metric-footer">
+              <span>Thresholds: {{ metric.thresholds?.length ?? 0 }}</span>
+              <span>Depends on: {{ metric.depends_on?.length ?? 0 }}</span>
             </div>
-          </div>
+          </router-link>
 
-          <div class="metric-footer">
-            <span>Thresholds: {{ metric.thresholds?.length ?? 0 }}</span>
-            <span>Depends on: {{ metric.depends_on?.length ?? 0 }}</span>
-          </div>
-        </router-link>
-
-        <div v-if="filteredMetrics.length === 0" class="state">No metrics match the filters.</div>
+          <div v-if="filteredMetrics.length === 0" class="state">No metrics match the filters.</div>
+        </div>
       </div>
     </div>
   </section>
