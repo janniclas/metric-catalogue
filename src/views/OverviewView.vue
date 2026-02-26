@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { getProposeMetricUrl } from "../lib/proposeMetric";
 import type { Metric } from "../lib/metrics";
+import iconUrl from "../assets/SPHA_Icon.svg";
 
 const { phases, metrics, loading, error, formattedUpdatedAt } = useMetricsCatalogue();
 const proposeMetricUrl = getProposeMetricUrl();
@@ -53,14 +54,24 @@ const topLevelByPhase = computed(() => {
 
 <template>
   <div class="app">
-    <header class="hero">
-      <div class="hero__copy">
-        <p class="eyebrow">SSDLC Metric Catalogue</p>
-        <h1>Security metrics that map cleanly to software delivery.</h1>
+    <section class="hero">
+      <div class="container hero__inner">
+        <img class="hero__icon" :src="iconUrl" alt="" />
+        <h1>SPHA</h1>
         <p class="subtitle">
-          Browse the phases of the SSDLC and the top-level metrics that define how security is measured
-          across the lifecycle.
+          Sichere Softwareentwicklung. Ihre Start-to-End Transformation mit uns!
         </p>
+        <div class="hero__actions">
+          <router-link class="primary" to="/metrics">View all metrics</router-link>
+          <a
+            class="ghost"
+            :href="proposeMetricUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Propose a metric
+          </a>
+        </div>
         <div class="hero__meta">
           <span>{{ phases.length }} phases</span>
           <span>•</span>
@@ -68,60 +79,81 @@ const topLevelByPhase = computed(() => {
           <span v-if="formattedUpdatedAt">• Updated {{ formattedUpdatedAt }}</span>
         </div>
       </div>
-      <div class="hero__panel">
-        <div class="panel-card">
-          <h2>Phase Overview</h2>
-          <p>Start here for a high-level view of the security metrics aligned to each SSDLC phase.</p>
-          <div class="panel-actions">
-            <router-link class="primary" to="/metrics">View all metrics</router-link>
-            <a
-              class="ghost"
-              :href="proposeMetricUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Propose a metric
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
+    </section>
 
-    <section class="phase-section">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Phase map</p>
-          <h2>SSDLC phases and top-level metrics</h2>
+    <section class="section section--light intro">
+      <div class="container intro__grid">
+        <div class="intro__copy">
+          <p class="eyebrow">Was ist SPHA?</p>
+          <h2>Eine Plattform für messbare Software-Qualität.</h2>
+          <p>
+            SPHA verbindet Ihre Sicherheitsmetriken mit den Phasen des SSDLC. So entsteht ein
+            konsistenter Blick auf die Wirksamkeit von Security-Aktivitäten in jedem Schritt.
+          </p>
+          <p>
+            Die Metriken sind kuratiert, versioniert und mit Verantwortlichkeiten verknüpft – damit
+            Sie Fortschritt transparent verfolgen und Teams gezielt unterstützen können.
+          </p>
         </div>
-        <p class="section-subtitle">
-          Top-level metrics are those that are not dependencies of other metrics. Each card shows the
-          metrics that define success for that phase.
-        </p>
-      </div>
-
-      <div v-if="loading" class="state">Loading metrics catalogue…</div>
-      <div v-else-if="error" class="state state--error">{{ error }}</div>
-      <div v-else class="phase-grid">
-        <router-link
-          v-for="(phase, index) in phases"
-          :key="phase.id"
-          class="phase-card phase-card--link"
-          :style="{ '--delay': index }"
-          :to="`/metrics?phase=${phase.id}`"
-        >
-          <header class="phase-card__header">
-            <div class="phase-card__icon">{{ phase.icon }}</div>
-            <div>
-              <h3>{{ phase.name }}</h3>
-              <p>{{ phase.description }}</p>
+        <div class="intro__visual">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-label">Phasen</span>
+              <span class="stat-value">{{ phases.length }}</span>
             </div>
-          </header>
-
-          <div class="phase-card__meta">
-            <span class="meta-label">Top-level metrics</span>
-            <span class="meta-value">{{ topLevelByPhase.get(phase.id)?.length ?? 0 }}</span>
+            <div class="stat-card">
+              <span class="stat-label">Metriken</span>
+              <span class="stat-value">{{ metrics.length }}</span>
+            </div>
+            <div class="stat-card" v-if="formattedUpdatedAt">
+              <span class="stat-label">Letztes Update</span>
+              <span class="stat-value">{{ formattedUpdatedAt }}</span>
+            </div>
           </div>
-        </router-link>
+          <div class="intro__art">
+            <span>Metric Map</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--dark phase-section">
+      <div class="container">
+        <div class="section-header section-header--center">
+          <div>
+            <p class="eyebrow">Prozess</p>
+            <h2>SSDLC-Phasen und Top-Level-Metriken</h2>
+          </div>
+          <p class="section-subtitle">
+            Top-Level-Metriken sind nicht von anderen Metriken abhängig. Jede Karte zeigt die
+            Metriken, die den Erfolg dieser Phase definieren.
+          </p>
+        </div>
+
+        <div v-if="loading" class="state">Loading metrics catalogue…</div>
+        <div v-else-if="error" class="state state--error">{{ error }}</div>
+        <div v-else class="phase-grid">
+          <router-link
+            v-for="(phase, index) in phases"
+            :key="phase.id"
+            class="phase-card phase-card--link"
+            :style="{ '--delay': index }"
+            :to="`/metrics?phase=${phase.id}`"
+          >
+            <header class="phase-card__header">
+              <div class="phase-card__icon">{{ phase.icon }}</div>
+              <div>
+                <h3>{{ phase.name }}</h3>
+                <p>{{ phase.description }}</p>
+              </div>
+            </header>
+
+            <div class="phase-card__meta">
+              <span class="meta-label">Top-level metrics</span>
+              <span class="meta-value">{{ topLevelByPhase.get(phase.id)?.length ?? 0 }}</span>
+            </div>
+          </router-link>
+        </div>
       </div>
     </section>
   </div>
