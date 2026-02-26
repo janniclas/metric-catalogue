@@ -353,6 +353,16 @@ button.ghost:hover,
   margin-bottom: 36px;
 }
 
+.section-header--inline {
+  align-items: baseline;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.section-header--inline h2 {
+  white-space: nowrap;
+}
+
 .section-header--center {
   align-items: center;
   text-align: center;
@@ -368,6 +378,10 @@ button.ghost:hover,
   font-size: 1rem;
   display: grid;
   gap: 6px;
+}
+
+.section-subtitle--inline {
+  max-width: none;
 }
 
 .section-subtitle .count {
@@ -869,6 +883,14 @@ button.ghost:hover,
 
   .section-header {
     align-items: flex-start;
+  }
+
+  .section-header--inline {
+    flex-wrap: wrap;
+  }
+
+  .section-header--inline h2 {
+    white-space: normal;
   }
 
   .navbar__inner {

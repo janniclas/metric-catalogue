@@ -57,9 +57,11 @@ const topLevelByPhase = computed(() => {
     <section class="hero">
       <div class="container hero__inner">
         <img class="hero__icon" :src="iconUrl" alt="" />
-        <h1>SPHA</h1>
+        <p class="eyebrow">SSDLC Metric Catalogue</p>
+        <h1>Security metrics that map cleanly to software delivery.</h1>
         <p class="subtitle">
-          Sichere Softwareentwicklung. Ihre Start-to-End Transformation mit uns!
+          Browse the phases of the SSDLC and the top-level metrics that define how security is measured
+          across the lifecycle.
         </p>
         <div class="hero__actions">
           <router-link class="primary" to="/metrics">View all metrics</router-link>
@@ -81,52 +83,14 @@ const topLevelByPhase = computed(() => {
       </div>
     </section>
 
-    <section class="section section--light intro">
-      <div class="container intro__grid">
-        <div class="intro__copy">
-          <p class="eyebrow">Was ist SPHA?</p>
-          <h2>Eine Plattform für messbare Software-Qualität.</h2>
-          <p>
-            SPHA verbindet Ihre Sicherheitsmetriken mit den Phasen des SSDLC. So entsteht ein
-            konsistenter Blick auf die Wirksamkeit von Security-Aktivitäten in jedem Schritt.
-          </p>
-          <p>
-            Die Metriken sind kuratiert, versioniert und mit Verantwortlichkeiten verknüpft – damit
-            Sie Fortschritt transparent verfolgen und Teams gezielt unterstützen können.
-          </p>
-        </div>
-        <div class="intro__visual">
-          <div class="stat-grid">
-            <div class="stat-card">
-              <span class="stat-label">Phasen</span>
-              <span class="stat-value">{{ phases.length }}</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">Metriken</span>
-              <span class="stat-value">{{ metrics.length }}</span>
-            </div>
-            <div class="stat-card" v-if="formattedUpdatedAt">
-              <span class="stat-label">Letztes Update</span>
-              <span class="stat-value">{{ formattedUpdatedAt }}</span>
-            </div>
-          </div>
-          <div class="intro__art">
-            <span>Metric Map</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section--dark phase-section">
+    <section class="section section--light phase-section">
       <div class="container">
-        <div class="section-header section-header--center">
-          <div>
-            <p class="eyebrow">Prozess</p>
-            <h2>SSDLC-Phasen und Top-Level-Metriken</h2>
-          </div>
-          <p class="section-subtitle">
-            Top-Level-Metriken sind nicht von anderen Metriken abhängig. Jede Karte zeigt die
-            Metriken, die den Erfolg dieser Phase definieren.
+        <p class="eyebrow">Phase map</p>
+        <div class="section-header section-header--inline">
+          <h2>SSDLC phases and top-level metrics</h2>
+          <p class="section-subtitle section-subtitle--inline">
+            Top-level metrics are those that are not dependencies of other metrics. Each card shows the
+            metrics that define success for that phase.
           </p>
         </div>
 
