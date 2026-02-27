@@ -329,7 +329,7 @@ function renderGraph() {
           if (node.role === "metric") {
             return phaseAnchors.get(node.phase ?? "")?.x ?? centerX;
           }
-          return node.x ?? centerX;
+          return typeof node.x === "number" ? node.x : centerX;
         })
         .strength((node) => (node.role === "metric" ? 0.08 : 0)),
     )
@@ -341,7 +341,7 @@ function renderGraph() {
           if (node.role === "metric") {
             return phaseAnchors.get(node.phase ?? "")?.y ?? centerY;
           }
-          return node.y ?? centerY;
+          return typeof node.y === "number" ? node.y : centerY;
         })
         .strength((node) => (node.role === "metric" ? 0.08 : 0)),
     )
