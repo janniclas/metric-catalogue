@@ -22,15 +22,16 @@
    - Pending: align remaining loading/error/empty states with existing UI patterns.
 6. Navigation update (Status: Not started)
    - Replace the “Metrics” navbar link with a drawer that links to the list view and the graph view.
-7. Full graph structure update (Status: Not started)
+7. Full graph structure update (Status: Completed)
    - Add a central node connected to SSDLC phase nodes.
    - Connect each metric to its phase node, then retain metric-to-metric dependency edges.
    - Use distinct shapes for the central node and phase nodes.
-8. Detail view layout update (Status: Not started)
+   - Add phase selection highlighting and SSDLC phase descriptions in the side panel.
+8. Detail view layout update (Status: Completed)
    - Move the dependency graph panel to the very bottom of the metric detail view (below all other content).
 9. Tests (Status: In progress)
    - Done: unit tests for adjacency map helpers.
-   - In progress: added graph view tests for expansion; still need detail graph tests and selection panel interaction coverage.
+   - In progress: added graph view tests for expansion + phase selection; still need detail graph tests and selection panel interaction coverage.
 
 ## Decisions Captured
 1. Graph library: D3 (use networks or hierarchies depending on fit).

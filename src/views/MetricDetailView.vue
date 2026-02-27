@@ -128,13 +128,6 @@ const sourceUrl = computed(() => {
           </div>
         </div>
 
-        <MetricDependencyGraph
-          :metric="metric"
-          :parents="parentMetrics"
-          :children="childMetrics"
-          :phases="phases"
-        />
-
         <section class="metric-detail__body" v-html="renderedMarkdown"></section>
 
         <section class="metric-detail__extras">
@@ -146,15 +139,6 @@ const sourceUrl = computed(() => {
                 <span v-if="threshold.description"> — {{ threshold.description }}</span>
               </li>
               <li v-if="!metric.thresholds?.length">No thresholds defined.</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Dependencies</h3>
-            <ul>
-              <li v-for="dependency in dependencyList" :key="dependency">
-                <RouterLink :to="`/metrics/${dependency}`">{{ dependency }}</RouterLink>
-              </li>
-              <li v-if="dependencyList.length === 0">No dependencies.</li>
             </ul>
           </div>
           <div>
@@ -187,6 +171,13 @@ const sourceUrl = computed(() => {
             </p>
           </div>
         </section>
+
+        <MetricDependencyGraph
+          :metric="metric"
+          :parents="parentMetrics"
+          :children="childMetrics"
+          :phases="phases"
+        />
       </div>
     </div>
   </section>
