@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
-import {useRoute} from "vue-router";
-import {useMetricsCatalogue} from "../lib/useMetricsCatalogue";
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
+import MetricCard from "../components/MetricCard.vue";
 
 const route = useRoute();
-const { phases, metrics, loading, error } = useMetricsCatalogue();
+const { phases, metrics, loading, error, phaseLabelMap } = useMetricsCatalogue();
 
 const search = ref("");
 const selectedPhases = ref<string[]>([]);
@@ -34,14 +35,6 @@ watch(
 const selectedPhaseSet = computed(() => new Set(selectedPhases.value));
 const selectedTagSet = computed(() => new Set(selectedTags.value));
 const selectedToolSet = computed(() => new Set(selectedTools.value));
-
-const phaseLabelMap = computed(() => {
-  const map = new Map<string, string>();
-  for (const phase of phases.value) {
-    map.set(phase.id, phase.name);
-  }
-  return map;
-});
 
 const availableTags = computed(() => {
   const set = new Set<string>();
@@ -265,35 +258,12 @@ function toggleFilter(key: keyof typeof openFilters.value) {
         </aside>
 
         <div class="metrics-grid">
-          <router-link
+          <MetricCard
             v-for="metric in filteredMetrics"
             :key="metric.id"
-            :to="`/metrics/${metric.id}`"
-            class="metric-card"
-            data-testid="metric-card"
-          >
-            <header>
-              <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
-              <h3>{{ metric.title }}</h3>
-              <p class="metric-id">{{ metric.id }}</p>
-            </header>
-
-            <div class="metric-meta">
-              <div>
-                <span class="meta-label">Tags</span>
-                <p>{{ metric.tags?.join(", ") || "—" }}</p>
-              </div>
-              <div>
-                <span class="meta-label">Tools</span>
-                <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
-              </div>
-            </div>
-
-            <div class="metric-footer">
-              <span>Thresholds: {{ metric.thresholds?.length ?? 0 }}</span>
-              <span>Depends on: {{ metric.depends_on?.length ?? 0 }}</span>
-            </div>
-          </router-link>
+            :metric="metric"
+            :phase-label="phaseLabelMap.get(metric.phase) ?? metric.phase"
+          />
 
           <div v-if="filteredMetrics.length === 0" class="state">No metrics match the filters.</div>
         </div>

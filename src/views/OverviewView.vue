@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
-import { getProposeMetricUrl } from "../lib/proposeMetric";
+import { proposeMetricUrl } from "../lib/config";
 import type { Metric } from "../lib/metrics";
 import iconUrl from "../assets/SPHA_Icon.svg";
 import {
@@ -27,16 +27,7 @@ const iconMap: Record<string, Component> = {
   activity: Activity,
 };
 
-const { phases, metrics, loading, error, formattedUpdatedAt } = useMetricsCatalogue();
-const proposeMetricUrl = getProposeMetricUrl();
-
-const metricPhaseById = computed(() => {
-  const map = new Map<string, string>();
-  for (const metric of metrics.value) {
-    map.set(metric.id, metric.phase);
-  }
-  return map;
-});
+const { phases, metrics, loading, error, formattedUpdatedAt, metricById } = useMetricsCatalogue();
 
 const dependedOnInPhase = computed(() => {
   const map = new Map<string, Set<string>>();
@@ -47,7 +38,7 @@ const dependedOnInPhase = computed(() => {
     const phase = metric.phase;
     const set = map.get(phase) ?? new Set<string>();
     for (const dependency of metric.depends_on ?? []) {
-      if (metricPhaseById.value.get(dependency) === phase) {
+      if (metricById.value.get(dependency)?.phase === phase) {
         set.add(dependency);
       }
     }

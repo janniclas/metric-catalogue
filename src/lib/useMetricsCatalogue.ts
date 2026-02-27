@@ -34,6 +34,39 @@ export function useMetricsCatalogue() {
 
   const phases = computed<Phase[]>(() => metricsIndex.value?.phases ?? []);
   const metrics = computed<Metric[]>(() => metricsIndex.value?.metrics ?? []);
+  const phaseById = computed(() => {
+    const map = new Map<string, Phase>();
+    for (const phase of phases.value) {
+      map.set(phase.id, phase);
+    }
+    return map;
+  });
+  const phaseLabelMap = computed(() => {
+    const map = new Map<string, string>();
+    for (const phase of phases.value) {
+      map.set(phase.id, phase.name);
+    }
+    return map;
+  });
+  const metricById = computed(() => {
+    const map = new Map<string, Metric>();
+    for (const metric of metrics.value) {
+      map.set(metric.id, metric);
+    }
+    return map;
+  });
+  const metricsByPhase = computed(() => {
+    const map = new Map<string, Metric[]>();
+    for (const phase of phases.value) {
+      map.set(phase.id, []);
+    }
+    for (const metric of metrics.value) {
+      const bucket = map.get(metric.phase) ?? [];
+      bucket.push(metric);
+      map.set(metric.phase, bucket);
+    }
+    return map;
+  });
 
   const formattedUpdatedAt = computed(() => {
     if (!metricsIndex.value?.generated_at) return "";
@@ -50,6 +83,10 @@ export function useMetricsCatalogue() {
     error,
     phases,
     metrics,
+    phaseById,
+    phaseLabelMap,
+    metricById,
+    metricsByPhase,
     formattedUpdatedAt,
     reload: async () => {
       metricsIndex.value = null;

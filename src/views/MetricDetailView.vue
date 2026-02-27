@@ -3,21 +3,14 @@ import { computed } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
+import { getRepoBranch, getRepoUrl } from "../lib/config";
 
 const route = useRoute();
-const { phases, metrics, loading, error } = useMetricsCatalogue();
-
-const phaseLabelMap = computed(() => {
-  const map = new Map<string, string>();
-  for (const phase of phases.value) {
-    map.set(phase.id, phase.name);
-  }
-  return map;
-});
+const { metrics, loading, error, phaseLabelMap, metricById } = useMetricsCatalogue();
 
 const metric = computed(() => {
   const id = String(route.params.id ?? "");
-  return metrics.value.find((item) => item.id === id) ?? null;
+  return metricById.value.get(id) ?? null;
 });
 
 const renderedMarkdown = computed(() => {
@@ -26,8 +19,6 @@ const renderedMarkdown = computed(() => {
 });
 
 const dependencyList = computed(() => metric.value?.depends_on ?? []);
-const repoUrl = import.meta.env.VITE_REPO_URL as string | undefined;
-const repoBranch = (import.meta.env.VITE_REPO_BRANCH as string | undefined) ?? "main";
 
 const relatedMetrics = computed(() => {
   if (!metric.value) return [];
@@ -54,7 +45,9 @@ const relatedMetrics = computed(() => {
 });
 
 const sourceUrl = computed(() => {
+  const repoUrl = getRepoUrl();
   if (!metric.value || !repoUrl) return null;
+  const repoBranch = getRepoBranch();
   const normalized = repoUrl.replace(/\/+$/, "");
   return `${normalized}/blob/${repoBranch}/${metric.value.source_path}`;
 });

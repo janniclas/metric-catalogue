@@ -9,10 +9,10 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - [x] Add runtime validation or safe parsing for the metrics index in `src/lib/metrics.ts` to avoid silent UI failures on malformed JSON.
 
 **De-duplication + Structure**
-- [ ] Centralize shared lookups in `src/lib/useMetricsCatalogue.ts` (e.g., `phaseLabelMap`, `phaseById`, `metricById`, `metricsByPhase`) and reuse them in `src/views/OverviewView.vue`, `src/views/MetricsView.vue`, `src/views/MetricDetailView.vue`.
-- [ ] Extract header/footer markup in `src/App.vue` into components (e.g., `src/components/AppHeader.vue`, `src/components/AppFooter.vue`) and reuse shared icon/link data to remove duplication.
-- [ ] Extract the metric card markup in `src/views/MetricsView.vue` into `src/components/MetricCard.vue` for easier reuse and cleaner templates.
-- [ ] Move global constants (e.g., repo/social URLs, propose-metric URL) into a single config module like `src/lib/config.ts` and consume from `src/App.vue`, `src/views/OverviewView.vue`, `src/views/MetricDetailView.vue`.
+- [x] Centralize shared lookups in `src/lib/useMetricsCatalogue.ts` (e.g., `phaseLabelMap`, `phaseById`, `metricById`, `metricsByPhase`) and reuse them in `src/views/OverviewView.vue`, `src/views/MetricsView.vue`, `src/views/MetricDetailView.vue`.
+- [x] Extract header/footer markup in `src/App.vue` into components (e.g., `src/components/AppHeader.vue`, `src/components/AppFooter.vue`) and reuse shared icon/link data to remove duplication.
+- [x] Extract the metric card markup in `src/views/MetricsView.vue` into `src/components/MetricCard.vue` for easier reuse and cleaner templates.
+- [x] Move global constants (e.g., repo/social URLs, propose-metric URL) into a single config module like `src/lib/config.ts` and consume from `src/App.vue`, `src/views/OverviewView.vue`, `src/views/MetricDetailView.vue`.
 
 **Performance + UX**
 - [ ] Precompute a normalized search index for metrics (e.g., `searchText`) in `src/lib/useMetricsCatalogue.ts` or a dedicated composable to avoid rebuilding large strings on every filter change in `src/views/MetricsView.vue`.
@@ -32,3 +32,8 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - Replaced manual YAML frontmatter with `yaml` serialization and updated tests to parse frontmatter via `gray-matter` (covers special characters like `:` and `#`).
 - Hardened markdown rendering by restricting URI protocols and enforcing `rel="noopener noreferrer"` + `target="_blank"` for external links; added tests for unsafe links and external link attributes.
 - Added runtime validation for the metrics index in `src/lib/metrics.ts` using `zod`; added client-side unit tests for valid/invalid payloads.
+- Centralized common maps in `useMetricsCatalogue` and wired views to reuse them.
+- Extracted `AppHeader`/`AppFooter` and removed duplicated SVG/link markup by using `src/lib/config.ts`.
+- Extracted `MetricCard` component to keep `MetricsView` template focused.
+- Consolidated repo URL/branch and social/proposal URLs under `src/lib/config.ts`.
+- Switched repo URL/branch accessors to lazy getters to avoid test env stubbing order issues.
