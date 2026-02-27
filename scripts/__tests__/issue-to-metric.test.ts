@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import assert from "node:assert/strict";
 import test from "node:test";
+import process from "node:process";
 
 const scriptPath = path.resolve("scripts/issue-to-metric.ts");
 
@@ -16,16 +17,16 @@ function runScript(args: string[], { cwd }: { cwd?: string } = {}) {
     let stdout = "";
     let stderr = "";
 
-    child.stdout.on("data", (data) => {
+    child.stdout.on("data", (data: { toString: () => string; }) => {
       stdout += data.toString();
     });
 
-    child.stderr.on("data", (data) => {
+    child.stderr.on("data", (data: { toString: () => string; }) => {
       stderr += data.toString();
     });
 
     child.on("error", reject);
-    child.on("close", (code) => {
+    child.on("close", (code: any) => {
       resolve({ code, stdout, stderr });
     });
   });
@@ -149,4 +150,35 @@ test("issue-to-metric rejects missing required fields", async () => {
 
   assert.notEqual(code, 0);
   assert.match(stderr, /Missing required fields/);
+});
+
+test("issue-to-metric parses issue template with blank lines", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
+  const metricsDir = path.join(tempDir, "metrics");
+  await fs.mkdir(metricsDir, { recursive: true });
+
+  const issueFixture = path.resolve("scripts/__tests__/issue.md");
+  const issuePath = path.join(tempDir, "issue.md");
+  await fs.copyFile(issueFixture, issuePath);
+
+  const { code, stdout, stderr } = await runScript([
+    "--issue-file",
+    issuePath,
+    "--metrics-dir",
+    metricsDir,
+    "--issue-number",
+    "42",
+  ]);
+
+  assert.equal(code, 0, stderr);
+  assert.ok(stdout.includes("METRIC_ID=test"));
+  assert.ok(stdout.includes("BRANCH_NAME=metric/42-test"));
+
+  const metricPath = path.join(metricsDir, "plan", "test.md");
+  const content = await fs.readFile(metricPath, "utf8");
+
+  assert.match(content, /id: test/);
+  assert.match(content, /title: f/);
+  assert.match(content, /phase: plan/);
+  assert.match(content, /# Description/);
 });

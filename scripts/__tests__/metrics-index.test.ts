@@ -59,9 +59,9 @@ test("builds an index from valid metrics", async () => {
   });
 
   assert.equal(payload.metrics.length, 1);
-  assert.equal(payload.metrics[0].id, "metric-a");
-  assert.equal(payload.metrics[0].markdown, "Metric A description.");
-  assert.equal(payload.metrics[0].source_path, "metrics/metric-a.md");
+  assert.equal(payload.metrics[0]!!.id, "metric-a");
+  assert.equal(payload.metrics[0]!!.markdown, "Metric A description.");
+  assert.equal(payload.metrics[0]!!.source_path, "metrics/metric-a.md");
 
   const written = JSON.parse(await fs.readFile(outputPath, "utf8"));
   assert.equal(written.metrics.length, 1);

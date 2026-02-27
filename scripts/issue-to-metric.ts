@@ -1,14 +1,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SECTION_REGEX = /^###\s+(.+)\n([\s\S]*?)(?=\n###\s+|\n?$)/gm;
+const SECTION_REGEX = /(?:^|\r?\n)###\s+(.+)\r?\n([\s\S]*?)(?=\r?\n###\s+|$)/g;
 const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function parseSections(body: string) {
   const sections: Record<string, string> = {};
   for (const match of body.matchAll(SECTION_REGEX)) {
-    const label = match[1].trim();
-    const value = match[2].trim();
+    const label = match[1]?.trim();
+    if (!label) continue;
+    const value = (match[2] ?? "").trim();
     sections[label] = value === "_No response_" ? "" : value;
   }
   return sections;
