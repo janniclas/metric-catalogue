@@ -95,12 +95,11 @@ watch(
       </button>
       <div id="primary-navigation" class="navbar__links" :class="isMenuOpen ? 'is-open' : ''">
         <RouterLink
-          to="/"
+          to="/about"
           class="nav-link"
           active-class="nav-link--active"
-          end
           @click="closeAllMenus"
-          >Overview
+          >About
         </RouterLink>
         <div
           ref="metricsMenuRef"
