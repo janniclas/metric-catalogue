@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { computed } from "vue";
 import { CircleCheck, ClipboardList, Search } from "lucide-vue-next";
-import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 
 type Step = {
   title: string;
@@ -34,11 +32,6 @@ const steps: Step[] = [
     step: "03",
   },
 ];
-
-const { phases, metrics, loading, formattedUpdatedAt } = useMetricsCatalogue();
-
-const metricsCount = computed(() => metrics.value.length);
-const phasesCount = computed(() => phases.value.length);
 </script>
 
 <template>
@@ -63,19 +56,30 @@ const phasesCount = computed(() => phases.value.length);
           </p>
         </div>
         <div class="intro__visual">
-          <div class="intro__art">Community-driven</div>
-          <div class="stat-grid">
-            <div class="stat-card">
-              <span class="stat-label">Phases</span>
-              <span class="stat-value">{{ loading ? "…" : phasesCount }}</span>
+          <div class="metric-map">
+            <div class="metric-map__node metric-map__node--primary">
+              <span class="metric-map__label">Metric</span>
+              <p>Patch latency (days)</p>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Metrics</span>
-              <span class="stat-value">{{ loading ? "…" : metricsCount }}</span>
+            <div class="metric-map__connector"></div>
+            <div class="metric-map__row">
+              <div class="metric-map__node">
+                <span class="metric-map__label">SSDLC phase</span>
+                <p>Build &amp; Release</p>
+              </div>
+              <div class="metric-map__node">
+                <span class="metric-map__label">Activity</span>
+                <p>Dependency review</p>
+              </div>
+              <div class="metric-map__node">
+                <span class="metric-map__label">Tool data source</span>
+                <p>SCA / CI signals</p>
+              </div>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Last updated</span>
-              <span class="stat-value">{{ formattedUpdatedAt || "—" }}</span>
+            <div class="metric-map__connector"></div>
+            <div class="metric-map__node metric-map__node--accent">
+              <span class="metric-map__label">Actionable outcome</span>
+              <p>Faster remediation</p>
             </div>
           </div>
         </div>
@@ -88,8 +92,8 @@ const phasesCount = computed(() => phases.value.length);
         <div class="section-header">
           <h2>How to propose new metrics.</h2>
           <p class="section-subtitle">
-            Proposals are issue-driven and turned into pull requests automatically. If you prefer
-            a manual PR, use the template in <code>metrics/templates/metric.md</code>.
+            Proposals are issue-driven and turned into pull requests automatically. If you prefer a
+            manual PR, use the template in <code>metrics/templates/metric.md</code>.
           </p>
         </div>
         <div class="phase-grid">
