@@ -1,5 +1,39 @@
-# Vue 3 + TypeScript + Vite
+# Metric Catalogue
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A Vue 3 + Vite app that renders a catalogue of SSDLC security metrics sourced from Markdown files in `metrics/`.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+**Requirements**
+- Node.js + npm
+
+**Development**
+```sh
+npm install
+npm run dev
+```
+
+**Build**
+```sh
+npm run metrics:build
+npm run build
+```
+
+**Tests**
+```sh
+npm test
+```
+
+**Formatting**
+```sh
+npm run format
+npm run format:fix
+```
+
+**Metrics Data**
+- Metrics live under `metrics/` as Markdown with YAML frontmatter.
+- `metrics/phases.json` defines available phases.
+- `scripts/build-metrics-index.ts` validates and generates `public/metrics/index.json`.
+
+**Environment Variables**
+- `VITE_BASE_PATH`: base path for deployments (used by Vite).
+- `VITE_REPO_URL`: repository URL used to link to source files.
+- `VITE_REPO_BRANCH`: repository branch for source links (defaults to `main`).

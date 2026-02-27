@@ -19,9 +19,9 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - [x] Provide a graceful fallback icon when `phase.icon` is missing or unknown (currently `iconMap[phase.icon]` can be `undefined`) in `src/views/OverviewView.vue`.
 
 **Best Practices + Maintainability**
-- [ ] Add `src/env.d.ts` to type `import.meta.env` values like `VITE_REPO_URL`, `VITE_REPO_BRANCH`, `VITE_BASE_PATH` instead of casting in `src/views/MetricDetailView.vue`.
-- [ ] Normalize formatting across `src/views/MetricsView.vue` and `vite.config.ts` and introduce a formatter/linter config to keep it consistent.
-- [ ] Update `README.md` to reflect the actual project (not the Vite template) and document build/test commands plus the metrics ingestion workflow.
+- [x] Add `src/env.d.ts` to type `import.meta.env` values like `VITE_REPO_URL`, `VITE_REPO_BRANCH`, `VITE_BASE_PATH` instead of casting in `src/views/MetricDetailView.vue`.
+- [x] Normalize formatting across `src/views/MetricsView.vue` and `vite.config.ts` and introduce a formatter/linter config to keep it consistent.
+- [x] Update `README.md` to reflect the actual project (not the Vite template) and document build/test commands plus the metrics ingestion workflow.
 
 **Tests**
 - [ ] Ensure global stubs are cleaned between tests by adding `vi.unstubAllGlobals()` (or equivalent) in `src/test/setup.ts` to avoid cross-test leakage from `vi.stubGlobal`.
@@ -39,3 +39,6 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - Switched repo URL/branch accessors to lazy getters to avoid test env stubbing order issues.
 - Added a precomputed `metricSearchTextById` map to reduce filter work in `MetricsView`.
 - Added a default fallback icon when a phase icon key is missing.
+- Added `src/env.d.ts` and removed env type casts in config getters.
+- Introduced Prettier config + npm scripts to enforce formatting and normalized `src/views/MetricsView.vue` + `vite.config.ts`.
+- Rewrote `README.md` to document project usage and workflows.

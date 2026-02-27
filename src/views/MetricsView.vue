@@ -25,12 +25,12 @@ watch(
   () => route.query.phase,
   (queryPhase) => {
     selectedPhases.value = Array.isArray(queryPhase)
-        ? queryPhase.map((value) => String(value))
-        : queryPhase
-            ? [String(queryPhase)]
-            : [];
+      ? queryPhase.map((value) => String(value))
+      : queryPhase
+        ? [String(queryPhase)]
+        : [];
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const selectedPhaseSet = computed(() => new Set(selectedPhases.value));
@@ -94,8 +94,6 @@ const filteredMetrics = computed(() => {
     }
 
     return !(requireDependencies.value && !(metric.depends_on?.length ?? 0));
-
-
   });
 });
 
@@ -141,111 +139,99 @@ function toggleFilter(key: keyof typeof openFilters.value) {
             <input v-model="search" type="search" placeholder="Search by title, id, or description" />
           </label>
 
-        <div class="filter-group">
-          <button
-            class="filter-toggle"
-            type="button"
-            @click="toggleFilter('phases')"
-            :aria-expanded="openFilters.phases"
-            aria-controls="filter-phases"
-          >
-            <span>Phases</span>
-            <span class="toggle-meta">
-              <span class="toggle-text">{{ openFilters.phases ? "Hide" : "Show" }}</span>
-              <span class="toggle-indicator" :class="openFilters.phases ? 'is-open' : ''">+</span>
-            </span>
-          </button>
-          <div id="filter-phases" class="option-grid" v-show="openFilters.phases">
-            <label v-for="phase in phases" :key="phase.id" class="option">
-              <input
-                type="checkbox"
-                  v-model="selectedPhases"
-                  :value="phase.id"
-                />
+          <div class="filter-group">
+            <button
+              class="filter-toggle"
+              type="button"
+              @click="toggleFilter('phases')"
+              :aria-expanded="openFilters.phases"
+              aria-controls="filter-phases"
+            >
+              <span>Phases</span>
+              <span class="toggle-meta">
+                <span class="toggle-text">{{ openFilters.phases ? "Hide" : "Show" }}</span>
+                <span class="toggle-indicator" :class="openFilters.phases ? 'is-open' : ''">+</span>
+              </span>
+            </button>
+            <div id="filter-phases" class="option-grid" v-show="openFilters.phases">
+              <label v-for="phase in phases" :key="phase.id" class="option">
+                <input type="checkbox" v-model="selectedPhases" :value="phase.id" />
                 <span>{{ phase.name }}</span>
               </label>
             </div>
-        </div>
+          </div>
 
-        <div class="filter-group">
-          <button
-            class="filter-toggle"
-            type="button"
-            @click="toggleFilter('tags')"
-            :aria-expanded="openFilters.tags"
-            aria-controls="filter-tags"
-          >
-            <span>Tags</span>
-            <span class="toggle-meta">
-              <span class="toggle-text">{{ openFilters.tags ? "Hide" : "Show" }}</span>
-              <span class="toggle-indicator" :class="openFilters.tags ? 'is-open' : ''">+</span>
-            </span>
-          </button>
-          <div id="filter-tags" class="option-grid" v-show="openFilters.tags">
-            <label v-for="tag in availableTags" :key="tag" class="option">
-              <input
-                  type="checkbox"
-                  v-model="selectedTags"
-                  :value="tag"
-                />
+          <div class="filter-group">
+            <button
+              class="filter-toggle"
+              type="button"
+              @click="toggleFilter('tags')"
+              :aria-expanded="openFilters.tags"
+              aria-controls="filter-tags"
+            >
+              <span>Tags</span>
+              <span class="toggle-meta">
+                <span class="toggle-text">{{ openFilters.tags ? "Hide" : "Show" }}</span>
+                <span class="toggle-indicator" :class="openFilters.tags ? 'is-open' : ''">+</span>
+              </span>
+            </button>
+            <div id="filter-tags" class="option-grid" v-show="openFilters.tags">
+              <label v-for="tag in availableTags" :key="tag" class="option">
+                <input type="checkbox" v-model="selectedTags" :value="tag" />
                 <span>{{ tag }}</span>
               </label>
               <p v-if="availableTags.length === 0" class="empty">No tags yet.</p>
             </div>
-        </div>
+          </div>
 
-        <div class="filter-group">
-          <button
-            class="filter-toggle"
-            type="button"
-            @click="toggleFilter('tools')"
-            :aria-expanded="openFilters.tools"
-            aria-controls="filter-tools"
-          >
-            <span>Related tools</span>
-            <span class="toggle-meta">
-              <span class="toggle-text">{{ openFilters.tools ? "Hide" : "Show" }}</span>
-              <span class="toggle-indicator" :class="openFilters.tools ? 'is-open' : ''">+</span>
-            </span>
-          </button>
-          <div id="filter-tools" class="option-grid" v-show="openFilters.tools">
-            <label v-for="tool in availableTools" :key="tool" class="option">
-              <input
-                  type="checkbox"
-                  v-model="selectedTools"
-                  :value="tool"
-                />
+          <div class="filter-group">
+            <button
+              class="filter-toggle"
+              type="button"
+              @click="toggleFilter('tools')"
+              :aria-expanded="openFilters.tools"
+              aria-controls="filter-tools"
+            >
+              <span>Related tools</span>
+              <span class="toggle-meta">
+                <span class="toggle-text">{{ openFilters.tools ? "Hide" : "Show" }}</span>
+                <span class="toggle-indicator" :class="openFilters.tools ? 'is-open' : ''">+</span>
+              </span>
+            </button>
+            <div id="filter-tools" class="option-grid" v-show="openFilters.tools">
+              <label v-for="tool in availableTools" :key="tool" class="option">
+                <input type="checkbox" v-model="selectedTools" :value="tool" />
                 <span>{{ tool }}</span>
               </label>
               <p v-if="availableTools.length === 0" class="empty">No tools yet.</p>
             </div>
-        </div>
-
-        <div class="filter-group">
-          <button
-            class="filter-toggle"
-            type="button"
-            @click="toggleFilter('other')"
-            :aria-expanded="openFilters.other"
-            aria-controls="filter-other"
-          >
-            <span>Other</span>
-            <span class="toggle-meta">
-              <span class="toggle-text">{{ openFilters.other ? "Hide" : "Show" }}</span>
-              <span class="toggle-indicator" :class="openFilters.other ? 'is-open' : ''">+</span>
-            </span>
-          </button>
-          <div id="filter-other" class="option-grid" v-show="openFilters.other">
-            <label class="option">
-              <input type="checkbox" v-model="requireThresholds" />
-              <span>Has thresholds</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" v-model="requireDependencies" />
-              <span>Has dependencies</span>
-            </label>
           </div>
-        </div>
+
+          <div class="filter-group">
+            <button
+              class="filter-toggle"
+              type="button"
+              @click="toggleFilter('other')"
+              :aria-expanded="openFilters.other"
+              aria-controls="filter-other"
+            >
+              <span>Other</span>
+              <span class="toggle-meta">
+                <span class="toggle-text">{{ openFilters.other ? "Hide" : "Show" }}</span>
+                <span class="toggle-indicator" :class="openFilters.other ? 'is-open' : ''">+</span>
+              </span>
+            </button>
+            <div id="filter-other" class="option-grid" v-show="openFilters.other">
+              <label class="option">
+                <input type="checkbox" v-model="requireThresholds" />
+                <span>Has thresholds</span>
+              </label>
+              <label class="option">
+                <input type="checkbox" v-model="requireDependencies" />
+                <span>Has dependencies</span>
+              </label>
+            </div>
+          </div>
 
           <button class="ghost" type="button" @click="clearFilters">Clear filters</button>
         </aside>
