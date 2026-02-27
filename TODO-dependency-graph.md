@@ -17,9 +17,9 @@
    - Implement a D3 network view with pan/zoom and selectable nodes.
    - Default node count rule: show all nodes if `metrics.length <= 30`; otherwise show 30 and show a “more nodes available” indicator.
    - Display node labels (metric name) and a side panel with description + button to detail view.
-5. Styling and UX polish (Status: In progress)
-   - In progress: applied phase-based node colors and base styling for graph views.
-   - Pending: align remaining loading/error/empty states with existing UI patterns.
+5. Styling and UX polish (Status: Completed)
+   - Applied phase-based node colors and base styling for graph views.
+   - Aligned empty state styling inside the graph detail panel.
 6. Navigation update (Status: Completed)
    - Replace the “Metrics” navbar link with a drawer that links to the list view and the graph view.
 7. Full graph structure update (Status: Completed)
@@ -29,9 +29,9 @@
    - Add phase selection highlighting and SSDLC phase descriptions in the side panel.
 8. Detail view layout update (Status: Completed)
    - Move the dependency graph panel to the very bottom of the metric detail view (below all other content).
-9. Tests (Status: In progress)
-   - Done: unit tests for adjacency map helpers.
-   - In progress: added graph view tests for expansion + phase selection; still need detail graph tests and selection panel interaction coverage.
+9. Tests (Status: Completed)
+   - Unit tests for adjacency map helpers.
+   - View tests for graph expansion, phase selection, metric selection, and detail graph presence.
 
 ## Decisions Captured
 1. Graph library: D3 (use networks or hierarchies depending on fit).

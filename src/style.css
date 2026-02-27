@@ -1112,6 +1112,13 @@ button.ghost:hover,
   gap: 12px;
 }
 
+.catalogue-graph__placeholder {
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: var(--surface-muted);
+}
+
 .catalogue-graph__panel h3 {
   margin: 6px 0 0;
   font-size: 1.2rem;

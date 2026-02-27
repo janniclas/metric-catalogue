@@ -103,3 +103,10 @@ export function useMetricsCatalogue() {
     },
   };
 }
+
+export function resetMetricsCatalogue() {
+  metricsIndex.value = null;
+  loading.value = false;
+  error.value = null;
+  inflight = null;
+}

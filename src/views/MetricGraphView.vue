@@ -159,7 +159,8 @@ function renderGraph() {
   svg.selectAll("*").remove();
   svg.attr("viewBox", `0 0 ${width} ${height}`);
 
-  svg.on("click", () => {
+  svg.on("click", (event) => {
+    if (event.target !== svgRef.value) return;
     selectedMetricId.value = null;
     selectedPhaseId.value = null;
   });
