@@ -187,6 +187,36 @@ img {
   box-shadow: 0 12px 24px rgba(90, 76, 242, 0.35);
 }
 
+.navbar__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.social-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+.social-link:hover,
+.social-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 20px rgba(10, 8, 30, 0.28);
+}
+
 .hero {
   position: relative;
   padding: 150px 0 120px;
@@ -851,6 +881,53 @@ button.ghost:hover,
   text-decoration: underline;
 }
 
+.site-footer {
+  margin-top: 80px;
+  border-top: 1px solid var(--border-light);
+  background: rgba(9, 5, 31, 0.7);
+}
+
+.footer__inner {
+  width: min(100% - 48px, var(--max-width));
+  margin: 0 auto;
+  padding: 24px 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer__links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 20px rgba(10, 8, 30, 0.24);
+}
+
 @keyframes rise {
   to {
     opacity: 1;
@@ -901,6 +978,10 @@ button.ghost:hover,
   .navbar__links {
     width: 100%;
   }
+
+  .footer__inner {
+    width: min(100% - 32px, var(--max-width));
+  }
 }
 
 @media (max-width: 640px) {
@@ -914,6 +995,10 @@ button.ghost:hover,
   }
 
   .hero__actions a {
+    width: 100%;
+  }
+
+  .footer__links {
     width: 100%;
   }
 }
