@@ -711,6 +711,10 @@ button.ghost:hover,
   gap: 18px;
 }
 
+.about-grid .metric-card {
+  align-content: start;
+}
+
 .phase-card {
   background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
