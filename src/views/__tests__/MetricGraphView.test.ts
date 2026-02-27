@@ -112,7 +112,9 @@ describe("MetricGraphView", () => {
       );
     });
 
-    const metricNode = Array.from(container.querySelectorAll(".catalogue-graph__node--metric")).find(
+    const metricNode = Array.from(
+      container.querySelectorAll(".catalogue-graph__node--metric"),
+    ).find(
       (node) =>
         node.querySelector("text")?.textContent?.trim() === "Security Requirements Coverage",
     );

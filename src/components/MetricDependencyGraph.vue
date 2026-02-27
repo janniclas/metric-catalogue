@@ -34,9 +34,7 @@ const containerRef = ref<HTMLDivElement | null>(null);
 const isOpen = ref(true);
 const containerWidth = ref(0);
 
-const hasDependencies = computed(
-  () => props.parents.length > 0 || props.children.length > 0,
-);
+const hasDependencies = computed(() => props.parents.length > 0 || props.children.length > 0);
 
 const phaseColorMap = computed(() => {
   const domain = props.phases.map((phase) => phase.id);
