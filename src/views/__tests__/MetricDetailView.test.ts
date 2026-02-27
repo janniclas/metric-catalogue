@@ -10,6 +10,7 @@ const detailRoute = {
 
 const listRoute = {
   path: "/metrics",
+  name: "metrics",
   component: { template: "<div />" },
 };
 

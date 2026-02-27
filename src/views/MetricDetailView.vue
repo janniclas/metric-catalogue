@@ -72,11 +72,31 @@ const sourceUrl = computed(() => {
         <div class="metric-detail__meta">
           <div>
             <span class="meta-label">Tags</span>
-            <p>{{ metric.tags?.join(", ") || "—" }}</p>
+            <p v-if="metric.tags?.length" class="meta-links">
+              <RouterLink
+                v-for="tag in metric.tags"
+                :key="tag"
+                class="meta-link"
+                :to="{ name: 'metrics', query: { tag } }"
+              >
+                {{ tag }}
+              </RouterLink>
+            </p>
+            <p v-else>—</p>
           </div>
           <div>
             <span class="meta-label">Tools</span>
-            <p>{{ metric.related_tools?.join(", ") || "—" }}</p>
+            <p v-if="metric.related_tools?.length" class="meta-links">
+              <RouterLink
+                v-for="tool in metric.related_tools"
+                :key="tool"
+                class="meta-link"
+                :to="{ name: 'metrics', query: { tool } }"
+              >
+                {{ tool }}
+              </RouterLink>
+            </p>
+            <p v-else>—</p>
           </div>
           <div>
             <span class="meta-label">Thresholds</span>

@@ -16,20 +16,47 @@ const selectedTools = ref<string[]>([]);
 const requireThresholds = ref(false);
 const requireDependencies = ref(false);
 const openFilters = ref({
-  phases: true,
+  phases: false,
   tags: false,
   tools: false,
   other: false,
 });
 
+function normalizeQueryArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry)).filter(Boolean);
+  }
+  if (value === undefined || value === null || value === "") return [];
+  return [String(value)];
+}
+
+function mergeQueryValues(...values: unknown[]): string[] {
+  const set = new Set<string>();
+  for (const value of values) {
+    for (const entry of normalizeQueryArray(value)) {
+      set.add(entry);
+    }
+  }
+  return [...set];
+}
+
 watch(
-  () => route.query.phase,
-  (queryPhase) => {
-    selectedPhases.value = Array.isArray(queryPhase)
-      ? queryPhase.map((value) => String(value))
-      : queryPhase
-        ? [String(queryPhase)]
-        : [];
+  () => route.query,
+  (query) => {
+    const phaseSelections = normalizeQueryArray(query.phase);
+    const tagSelections = mergeQueryValues(query.tag, query.tags);
+    const toolSelections = mergeQueryValues(query.tool, query.tools);
+
+    selectedPhases.value = phaseSelections;
+    selectedTags.value = tagSelections;
+    selectedTools.value = toolSelections;
+
+    openFilters.value = {
+      phases: phaseSelections.length > 0,
+      tags: tagSelections.length > 0,
+      tools: toolSelections.length > 0,
+      other: false,
+    };
   },
   { immediate: true },
 );
