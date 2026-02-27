@@ -20,7 +20,7 @@
 5. Styling and UX polish (Status: In progress)
    - In progress: applied phase-based node colors and base styling for graph views.
    - Pending: align remaining loading/error/empty states with existing UI patterns.
-6. Navigation update (Status: Not started)
+6. Navigation update (Status: Completed)
    - Replace the “Metrics” navbar link with a drawer that links to the list view and the graph view.
 7. Full graph structure update (Status: Completed)
    - Add a central node connected to SSDLC phase nodes.
