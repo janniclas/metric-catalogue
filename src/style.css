@@ -637,6 +637,7 @@ button.ghost:hover,
   display: flex;
   flex-direction: column;
   gap: 32px;
+  padding-top: 64px;
 }
 
 .metrics-layout {
@@ -923,6 +924,10 @@ button.ghost:hover,
   grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
   gap: 24px;
   align-items: start;
+}
+
+.catalogue-graph {
+  padding-top: 64px;
 }
 
 .catalogue-graph--expanded .catalogue-graph__container {
