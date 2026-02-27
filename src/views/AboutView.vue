@@ -93,7 +93,7 @@ const steps: Step[] = [
           <h2>How to propose new metrics.</h2>
           <p class="section-subtitle">
             Proposals are issue-driven and turned into pull requests automatically. If you prefer a
-            manual PR, use the template in <code>metrics/templates/metric.md</code>.
+            manual PR, use the template in <code>metrics/templates/metric.md</code>
           </p>
         </div>
         <div class="phase-grid">

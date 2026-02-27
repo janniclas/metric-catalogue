@@ -453,7 +453,7 @@ button.ghost:hover,
 }
 
 .section {
-  padding: 96px 0;
+  padding: 64px 0;
 }
 
 .section--light {
@@ -812,7 +812,6 @@ button.ghost:hover,
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding-top: 64px;
 }
 
 .metrics-layout {
@@ -1551,7 +1550,7 @@ button.ghost:hover,
   }
 
   .section {
-    padding: 72px 0;
+    padding: 64px 0;
   }
 
   .section-header {
