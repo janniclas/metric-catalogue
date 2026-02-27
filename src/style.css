@@ -636,6 +636,63 @@ button.ghost:hover,
   transform: rotate(6deg);
 }
 
+.metric-map {
+  background: linear-gradient(140deg, rgba(122, 107, 255, 0.12), rgba(90, 76, 242, 0.05));
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(122, 107, 255, 0.2);
+  padding: 24px;
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
+
+.metric-map__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.metric-map__node {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 6px;
+}
+
+.metric-map__node p {
+  margin: 0;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.metric-map__label {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.metric-map__node--primary,
+.metric-map__node--accent {
+  border-color: rgba(122, 107, 255, 0.4);
+}
+
+.metric-map__node--accent {
+  background: linear-gradient(120deg, rgba(122, 107, 255, 0.12), rgba(90, 76, 242, 0.06));
+}
+
+.metric-map__connector {
+  justify-self: center;
+  width: 2px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(122, 107, 255, 0.2), rgba(122, 107, 255, 0.6));
+}
+
 .phase-section {
   display: flex;
   flex-direction: column;
