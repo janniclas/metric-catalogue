@@ -918,6 +918,151 @@ button.ghost:hover,
   color: var(--text-dark);
 }
 
+.catalogue-graph__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: 24px;
+  align-items: start;
+}
+
+.catalogue-graph__surface {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 18px 20px 20px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.catalogue-graph__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.catalogue-graph__notice,
+.catalogue-graph__hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.catalogue-graph__action {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--accent-strong);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(90, 76, 242, 0.25);
+}
+
+.catalogue-graph__canvas {
+  width: 100%;
+  min-height: 460px;
+  border-radius: 20px;
+  border: 1px dashed rgba(32, 28, 60, 0.16);
+  background: linear-gradient(135deg, rgba(122, 107, 255, 0.08), rgba(12, 8, 35, 0.04));
+  padding: 12px;
+}
+
+.catalogue-graph__canvas svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.catalogue-graph__node text {
+  font-size: 0.78rem;
+  fill: var(--text-dark);
+  font-weight: 600;
+}
+
+.catalogue-graph__node.is-selected circle {
+  stroke: var(--accent-strong);
+  stroke-width: 3px;
+}
+
+.catalogue-graph__panel {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.catalogue-graph__panel h3 {
+  margin: 6px 0 0;
+  font-size: 1.2rem;
+  color: var(--text-dark);
+}
+
+.catalogue-graph__description {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.catalogue-graph__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.catalogue-graph__placeholder p {
+  color: var(--text-muted);
+}
+
+.metric-graph {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.metric-graph__toggle {
+  padding: 0;
+}
+
+.metric-graph__panel {
+  display: grid;
+  gap: 12px;
+}
+
+.metric-graph__canvas {
+  width: 100%;
+  min-height: 240px;
+  border-radius: 18px;
+  border: 1px dashed rgba(32, 28, 60, 0.16);
+  background: linear-gradient(135deg, rgba(122, 107, 255, 0.08), rgba(12, 8, 35, 0.04));
+  padding: 12px;
+}
+
+.metric-graph__canvas svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.metric-graph__node text {
+  font-size: 0.78rem;
+  fill: var(--text-dark);
+  font-weight: 600;
+}
+
+.metric-graph__node--center text {
+  font-size: 0.88rem;
+}
+
 .metric-detail__body p {
   color: var(--text-dark);
 }
@@ -1040,6 +1185,10 @@ button.ghost:hover,
   }
 
   .metrics-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .catalogue-graph__layout {
     grid-template-columns: 1fr;
   }
 

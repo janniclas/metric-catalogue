@@ -37,6 +37,9 @@ onBeforeUnmount(() => {
         <RouterLink to="/metrics" class="nav-link" active-class="nav-link--active"
           >Metrics
         </RouterLink>
+        <RouterLink to="/graph" class="nav-link" active-class="nav-link--active"
+          >Graph
+        </RouterLink>
         <a class="nav-cta" :href="proposeMetricUrl" target="_blank" rel="noopener noreferrer">
           Propose a metric
         </a>
