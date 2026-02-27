@@ -581,10 +581,16 @@ button.ghost:hover,
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: var(--ink-muted);
+  color: var(--text-muted);
   margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.phase-card__meta .meta-label,
+.phase-card__meta .meta-value {
+  color: var(--text-muted);
+  margin-bottom: 0;
 }
 
 .meta-label {
@@ -592,7 +598,6 @@ button.ghost:hover,
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   color: var(--text-muted);
-  display: block;
   margin-bottom: 4px;
 }
 
