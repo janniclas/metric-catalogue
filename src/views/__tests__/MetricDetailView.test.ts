@@ -40,4 +40,14 @@ describe("MetricDetailView", () => {
       "https://github.com/example/metric-catalogue/blob/main/metrics/plan-security-requirements-coverage.md",
     );
   });
+
+  it("renders the dependency graph panel and removes the dependencies card", async () => {
+    const { findByText, queryByText } = await renderWithRouter(MetricDetailView, {
+      route: "/metrics/plan-security-requirements-coverage",
+      routes: [detailRoute, listRoute],
+    });
+
+    await findByText("Dependency graph");
+    expect(queryByText("Dependencies")).toBeNull();
+  });
 });
