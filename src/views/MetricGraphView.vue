@@ -152,6 +152,9 @@ function renderGraph() {
 
   const width = containerRef.value.clientWidth || 720;
   const height = Math.max(440, Math.round(width * 0.65));
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const phaseRadius = Math.min(width, height) * 0.28;
 
   const svg = d3.select(svgRef.value);
   svg.selectAll("*").remove();
@@ -170,7 +173,32 @@ function renderGraph() {
 
   stopSimulation();
 
-  const nodeList = nodes.value.map((node) => ({ ...node }));
+  const phaseAnchors = new Map<string, { x: number; y: number }>();
+  if (phases.value.length > 0) {
+    const step = (Math.PI * 2) / phases.value.length;
+    phases.value.forEach((phase, index) => {
+      const angle = -Math.PI / 2 + index * step;
+      phaseAnchors.set(phase.id, {
+        x: centerX + Math.cos(angle) * phaseRadius,
+        y: centerY + Math.sin(angle) * phaseRadius,
+      });
+    });
+  }
+
+  const nodeList = nodes.value.map((node) => {
+    const cloned = { ...node } as GraphNode & { fx?: number; fy?: number };
+    if (node.role === "root") {
+      cloned.fx = centerX;
+      cloned.fy = centerY;
+    } else if (node.role === "phase") {
+      const anchor = phaseAnchors.get(node.phase ?? "");
+      if (anchor) {
+        cloned.fx = anchor.x;
+        cloned.fy = anchor.y;
+      }
+    }
+    return cloned;
+  });
   const linkList = links.value.map((link) => ({ ...link }));
   const highlightSet = highlightedNodeIds.value;
 
@@ -259,6 +287,12 @@ function renderGraph() {
     .attr("y", 4)
     .text((node) => node.label);
 
+  const labelRadius = (node: GraphNode) => {
+    const labelLength = node.label?.length ?? 0;
+    const base = node.role === "root" ? 36 : node.role === "phase" ? 30 : 24;
+    return base + Math.min(70, labelLength * 2.6);
+  };
+
   simulation = d3
     .forceSimulation(nodeList)
     .force(
@@ -266,19 +300,43 @@ function renderGraph() {
       d3
         .forceLink<GraphNode, GraphLink>(linkList)
         .id((node) => node.id)
-        .distance((link) => (link.role === "phase-link" ? 80 : 100))
-        .strength((link) => (link.role === "phase-link" ? 0.9 : 0.75)),
+        .distance((link) => (link.role === "phase-link" ? 120 : 140))
+        .strength((link) => (link.role === "phase-link" ? 0.95 : 0.7)),
     )
     .force(
       "charge",
-      d3.forceManyBody<GraphNode>().strength((node) => (node.role === "root" ? -420 : -260)),
+      d3.forceManyBody<GraphNode>().strength((node) => (node.role === "root" ? -520 : -320)),
     )
-    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("center", d3.forceCenter(centerX, centerY))
+    .force(
+      "phase-cluster",
+      d3
+        .forceX<GraphNode>()
+        .x((node) => {
+          if (node.role === "metric") {
+            return phaseAnchors.get(node.phase ?? "")?.x ?? centerX;
+          }
+          return node.x ?? centerX;
+        })
+        .strength((node) => (node.role === "metric" ? 0.08 : 0)),
+    )
+    .force(
+      "phase-cluster-y",
+      d3
+        .forceY<GraphNode>()
+        .y((node) => {
+          if (node.role === "metric") {
+            return phaseAnchors.get(node.phase ?? "")?.y ?? centerY;
+          }
+          return node.y ?? centerY;
+        })
+        .strength((node) => (node.role === "metric" ? 0.08 : 0)),
+    )
     .force(
       "collide",
       d3
         .forceCollide<GraphNode>()
-        .radius((node) => (node.role === "root" ? 32 : node.role === "phase" ? 26 : 20)),
+        .radius((node) => labelRadius(node)),
     )
     .on("tick", () => {
       linkSelection

@@ -980,6 +980,9 @@ button.ghost:hover,
   font-size: 0.78rem;
   fill: var(--text-dark);
   font-weight: 600;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 3px;
 }
 
 .catalogue-graph__node.is-selected circle {
