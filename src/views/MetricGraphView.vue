@@ -4,7 +4,7 @@ import { RouterLink } from "vue-router";
 import * as d3 from "d3";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
-import type { Metric, Phase } from "../lib/metrics";
+import type { Metric } from "../lib/metrics";
 
 const { metrics, phases, loading, error, metricById, phaseLabelMap } = useMetricsCatalogue();
 
@@ -14,6 +14,7 @@ const containerWidth = ref(0);
 const showAll = ref(false);
 const selectedMetricId = ref<string | null>(null);
 const selectedPhaseId = ref<string | null>(null);
+const isExpanded = ref(false);
 
 const maxInitialNodes = 30;
 
@@ -64,11 +65,7 @@ const nodes = computed<GraphNode[]>(() => {
     role: "phase" as const,
   }));
 
-  return [
-    { id: "root", label: "SSDLC", role: "root" as const },
-    ...phaseNodes,
-    ...metricNodes,
-  ];
+  return [{ id: "root", label: "SSDLC", role: "root" as const }, ...phaseNodes, ...metricNodes];
 });
 
 const links = computed<GraphLink[]>(() => {
@@ -128,8 +125,8 @@ function extractDescription(metric: Metric): string {
     const temp = document.createElement("div");
     temp.innerHTML = html;
     const firstParagraph = temp.querySelector("p");
-    const text = (firstParagraph?.textContent ?? temp.textContent ?? "").trim();
-    return text;
+
+    return (firstParagraph?.textContent ?? temp.textContent ?? "").trim();
   }
 
   const lines = markdown
@@ -151,7 +148,9 @@ function renderGraph() {
   if (!svgRef.value || !containerRef.value) return;
 
   const width = containerRef.value.clientWidth || 720;
-  const height = Math.max(440, Math.round(width * 0.65));
+  const height = isExpanded.value
+    ? Math.max(560, Math.round(window.innerHeight * 0.75))
+    : Math.max(440, Math.round(width * 0.65));
   const centerX = width / 2;
   const centerY = height / 2;
   const phaseRadius = Math.min(width, height) * 0.28;
@@ -174,7 +173,9 @@ function renderGraph() {
       zoomGroup.attr("transform", event.transform);
     });
 
-  svg.call(zoom as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>) => void);
+  svg.call(
+    zoom as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>) => void,
+  );
 
   stopSimulation();
 
@@ -220,7 +221,10 @@ function renderGraph() {
       if (highlightSet.has(sourceId) && highlightSet.has(targetId)) {
         return "is-highlighted";
       }
-      if (link.role === "phase-link" && (highlightSet.has(sourceId) || highlightSet.has(targetId))) {
+      if (
+        link.role === "phase-link" &&
+        (highlightSet.has(sourceId) || highlightSet.has(targetId))
+      ) {
         return "is-highlighted";
       }
       return "is-dim";
@@ -244,7 +248,9 @@ function renderGraph() {
       }
       return classes.join(" ");
     })
-    .style("cursor", (node) => (node.role === "metric" || node.role === "phase" ? "pointer" : "default"))
+    .style("cursor", (node) =>
+      node.role === "metric" || node.role === "phase" ? "pointer" : "default",
+    )
     .on("click", (event, node) => {
       event.stopPropagation();
       if (node.role === "metric") {
@@ -340,9 +346,7 @@ function renderGraph() {
     )
     .force(
       "collide",
-      d3
-        .forceCollide<GraphNode>()
-        .radius((node) => labelRadius(node)),
+      d3.forceCollide<GraphNode>().radius((node) => labelRadius(node)),
     )
     .on("tick", () => {
       linkSelection
@@ -379,9 +383,12 @@ onBeforeUnmount(() => {
   stopSimulation();
 });
 
-watch([nodes, links, containerWidth, showAll, selectedMetricId, selectedPhaseId], () => {
-  void nextTick(renderGraph);
-});
+watch(
+  [nodes, links, containerWidth, showAll, selectedMetricId, selectedPhaseId, isExpanded],
+  () => {
+    void nextTick(renderGraph);
+  },
+);
 
 watch(displayedMetrics, (nextMetrics) => {
   if (!selectedMetricId.value) return;
@@ -391,8 +398,11 @@ watch(displayedMetrics, (nextMetrics) => {
 </script>
 
 <template>
-  <section class="catalogue-graph section section--light">
-    <div class="container">
+  <section
+    class="catalogue-graph section section--light"
+    :class="isExpanded ? 'catalogue-graph--expanded' : ''"
+  >
+    <div class="container catalogue-graph__container">
       <div class="section-header">
         <div>
           <p class="eyebrow">Catalogue</p>
@@ -400,9 +410,7 @@ watch(displayedMetrics, (nextMetrics) => {
         </div>
         <div class="section-subtitle">
           <p>Explore the dependency network across all security metrics.</p>
-          <p class="count" v-if="metrics.length">
-            {{ metrics.length }} metrics total
-          </p>
+          <p class="count" v-if="metrics.length">{{ metrics.length }} metrics total</p>
         </div>
       </div>
 
@@ -424,6 +432,9 @@ watch(displayedMetrics, (nextMetrics) => {
               Show all metrics
             </button>
             <p v-else class="catalogue-graph__hint">Scroll or pinch to zoom, drag to pan.</p>
+            <button class="catalogue-graph__action" type="button" @click="isExpanded = !isExpanded">
+              {{ isExpanded ? "Collapse view" : "Expand view" }}
+            </button>
           </div>
           <div ref="containerRef" class="catalogue-graph__canvas">
             <svg ref="svgRef" role="img" aria-label="Metrics dependency graph"></svg>
