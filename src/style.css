@@ -562,6 +562,13 @@ button.ghost:hover,
   flex-shrink: 0;
 }
 
+.phase-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .phase-card__title {
   font-size: 1.05rem;
   font-weight: 600;

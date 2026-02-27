@@ -126,10 +126,12 @@ const topLevelByPhase = computed(() => {
             :style="{ '--delay': index }"
             :to="`/metrics?phase=${phase.id}`"
           >
-            <div class="phase-card__icon">
-              <component :is="iconMap[phase.icon]" :size="24" />
+            <div class="phase-card__header">
+              <h3 class="phase-card__title">{{ phase.name }}</h3>
+              <div class="phase-card__icon">
+                <component :is="iconMap[phase.icon]" :size="24" />
+              </div>
             </div>
-            <h3 class="phase-card__title">{{ phase.name }}</h3>
             <p class="phase-card__desc">{{ phase.description }}</p>
             <div class="phase-card__meta">
               <span class="meta-value">{{ topLevelByPhase.get(phase.id)?.length ?? 0 }}</span>
