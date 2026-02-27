@@ -388,6 +388,7 @@ button.ghost:hover,
   align-items: baseline;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  gap: 22rem;
 }
 
 .section-header--inline h2 {
