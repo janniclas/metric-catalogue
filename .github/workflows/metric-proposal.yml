@@ -39,6 +39,9 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
 
+      - name: Format metric file
+        run: npx prettier --write "$METRIC_PATH"
+
       - name: Create branch and commit
         run: |
           git config user.name "github-actions"
