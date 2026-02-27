@@ -4,9 +4,11 @@ import { useRoute, RouterLink } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
 import { getRepoBranch, getRepoUrl } from "../lib/config";
+import { buildDependencyMaps } from "../lib/metricGraph";
+import MetricDependencyGraph from "../components/MetricDependencyGraph.vue";
 
 const route = useRoute();
-const { metrics, loading, error, phaseLabelMap, metricById } = useMetricsCatalogue();
+const { metrics, loading, error, phaseLabelMap, metricById, phases } = useMetricsCatalogue();
 
 const metric = computed(() => {
   const id = String(route.params.id ?? "");
@@ -19,6 +21,24 @@ const renderedMarkdown = computed(() => {
 });
 
 const dependencyList = computed(() => metric.value?.depends_on ?? []);
+
+const dependencyMaps = computed(() => buildDependencyMaps(metrics.value));
+
+const parentMetrics = computed(() => {
+  if (!metric.value) return [];
+  const parents = dependencyMaps.value.parentsById.get(metric.value.id) ?? [];
+  return parents
+    .map((id) => metricById.value.get(id))
+    .filter((parent): parent is NonNullable<typeof parent> => Boolean(parent));
+});
+
+const childMetrics = computed(() => {
+  if (!metric.value) return [];
+  const children = dependencyMaps.value.childrenById.get(metric.value.id) ?? [];
+  return children
+    .map((id) => metricById.value.get(id))
+    .filter((child): child is NonNullable<typeof child> => Boolean(child));
+});
 
 const relatedMetrics = computed(() => {
   if (!metric.value) return [];
@@ -107,6 +127,13 @@ const sourceUrl = computed(() => {
             <p>{{ metric.depends_on?.length ?? 0 }}</p>
           </div>
         </div>
+
+        <MetricDependencyGraph
+          :metric="metric"
+          :parents="parentMetrics"
+          :children="childMetrics"
+          :phases="phases"
+        />
 
         <section class="metric-detail__body" v-html="renderedMarkdown"></section>
 
