@@ -28,6 +28,7 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - [x] Update `README.md` to reflect the actual project (not the Vite template) and document build/test commands plus the metrics ingestion workflow.
 
 **Tests**
+
 - [x] Ensure global stubs are cleaned between tests by adding `vi.unstubAllGlobals()` (or equivalent) in `src/test/setup.ts` to avoid cross-test leakage from `vi.stubGlobal`.
 - [x] Add a focused unit test for the filter logic once it’s extracted (e.g., from `src/views/MetricsView.vue`) to prevent regressions in tag/tool/phase matching.
 

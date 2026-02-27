@@ -41,8 +41,7 @@ describe("buildDependencyMaps", () => {
       },
     ];
 
-    const { parentsById, childrenById, missingDependenciesById } =
-      buildDependencyMaps(metrics);
+    const { parentsById, childrenById, missingDependenciesById } = buildDependencyMaps(metrics);
 
     expect(parentsById.get("metric-a")).toEqual(["metric-b"]);
     expect(childrenById.get("metric-b")).toEqual(["metric-a"]);

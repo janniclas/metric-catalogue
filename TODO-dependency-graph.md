@@ -1,6 +1,7 @@
 # Dependency Graph Feature Plan
 
 ## Step-By-Step Todo (With Progress)
+
 1. Baseline check (Status: Completed)
    - Locate current metric dependency usage and confirm available fields (`depends_on`, `markdown`, etc.).
    - Decide D3 modules to use for network layout and drag/zoom behaviors.
@@ -34,6 +35,7 @@
    - View tests for graph expansion, phase selection, metric selection, and detail graph presence.
 
 ## Decisions Captured
+
 1. Graph library: D3 (use networks or hierarchies depending on fit).
 2. Graph base: networks.
 3. Detail graph layout: radial (as a constrained network).
@@ -51,4 +53,5 @@
 15. Full graph topology: central node -> phases -> metrics -> dependency links.
 
 ## Open Questions
+
 - None at the moment.

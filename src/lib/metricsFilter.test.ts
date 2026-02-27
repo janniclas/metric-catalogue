@@ -32,9 +32,7 @@ describe("filterMetrics", () => {
       toolFilter: new Set(["jira"]),
     });
 
-    expect(result.map((metric) => metric.id)).toEqual([
-      "plan-security-requirements-coverage",
-    ]);
+    expect(result.map((metric) => metric.id)).toEqual(["plan-security-requirements-coverage"]);
   });
 
   it("filters by search query using precomputed map", () => {
@@ -43,9 +41,7 @@ describe("filterMetrics", () => {
       searchTextById: buildSearchMap(),
     });
 
-    expect(result.map((metric) => metric.id)).toEqual([
-      "build-dependency-vulnerability-rate",
-    ]);
+    expect(result.map((metric) => metric.id)).toEqual(["build-dependency-vulnerability-rate"]);
   });
 
   it("filters by thresholds and dependencies", () => {
