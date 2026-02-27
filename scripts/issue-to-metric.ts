@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import YAML from "yaml";
 
 const SECTION_REGEX = /(?:^|\r?\n)###\s+(.+)\r?\n([\s\S]*?)(?=\r?\n###\s+|$)/g;
 const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -62,52 +63,42 @@ function buildFrontmatter(data: {
   thresholds: Array<{ name: string; value: string; description?: string }>;
   references: string[];
 }) {
-  const lines = ["---"];
-  lines.push(`id: ${data.id}`);
-  lines.push(`title: ${data.title}`);
-  lines.push(`phase: ${data.phase}`);
+  const frontmatter: Record<string, unknown> = {
+    id: data.id,
+    title: data.title,
+    phase: data.phase,
+  };
 
   if (data.tags.length) {
-    lines.push("tags:");
-    for (const tag of data.tags) {
-      lines.push(`  - ${tag}`);
-    }
+    frontmatter.tags = data.tags;
   }
 
   if (data.related_tools.length) {
-    lines.push("related_tools:");
-    for (const tool of data.related_tools) {
-      lines.push(`  - ${tool}`);
-    }
+    frontmatter.related_tools = data.related_tools;
   }
 
   if (data.depends_on.length) {
-    lines.push("depends_on:");
-    for (const dep of data.depends_on) {
-      lines.push(`  - ${dep}`);
-    }
+    frontmatter.depends_on = data.depends_on;
   }
 
   if (data.thresholds.length) {
-    lines.push("thresholds:");
-    for (const threshold of data.thresholds) {
-      lines.push(`  - name: ${threshold.name}`);
-      lines.push(`    value: ${JSON.stringify(threshold.value)}`);
-      if (threshold.description) {
-        lines.push(`    description: ${threshold.description}`);
-      }
-    }
+    frontmatter.thresholds = data.thresholds.map((threshold) => ({
+      name: threshold.name,
+      value: threshold.value,
+      ...(threshold.description ? { description: threshold.description } : {}),
+    }));
   }
 
   if (data.references.length) {
-    lines.push("references:");
-    for (const ref of data.references) {
-      lines.push(`  - ${ref}`);
-    }
+    frontmatter.references = data.references;
   }
 
-  lines.push("---");
-  return lines.join("\n");
+  const yaml = YAML.stringify(frontmatter, {
+    indent: 2,
+    lineWidth: 0,
+  }).trimEnd();
+
+  return `---\n${yaml}\n---`;
 }
 
 function buildBody(data: {
@@ -133,11 +124,31 @@ function buildBody(data: {
   return sections.join("\n");
 }
 
+async function loadPhaseIds(phasesFile: string) {
+  const raw = await fs.readFile(phasesFile, "utf8");
+  const parsed = JSON.parse(raw);
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error(`Invalid phases file: ${phasesFile}`);
+  }
+
+  const ids = parsed
+    .map((phase) => (phase && typeof phase.id === "string" ? phase.id.trim() : ""))
+    .filter(Boolean);
+
+  if (ids.length !== parsed.length) {
+    throw new Error(`Invalid phases file: ${phasesFile}`);
+  }
+
+  return new Set(ids);
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const issueFileIndex = args.indexOf("--issue-file");
   const metricsDirIndex = args.indexOf("--metrics-dir");
   const issueNumberIndex = args.indexOf("--issue-number");
+  const phasesFileIndex = args.indexOf("--phases-file");
 
   if (issueFileIndex === -1) {
     throw new Error("--issue-file is required");
@@ -146,6 +157,8 @@ async function main() {
   const issueFile = args[issueFileIndex + 1];
   const metricsDir = metricsDirIndex === -1 ? "metrics" : args[metricsDirIndex + 1];
   const issueNumber = issueNumberIndex === -1 ? "unknown" : args[issueNumberIndex + 1];
+  const phasesFile =
+    phasesFileIndex === -1 ? path.join(metricsDir, "phases.json") : args[phasesFileIndex + 1];
 
   const body = await fs.readFile(issueFile, "utf8");
   const sections = parseSections(body);
@@ -170,9 +183,15 @@ async function main() {
   }
 
   ensureId(data.id);
+  const phaseIds = await loadPhaseIds(phasesFile);
+  if (!phaseIds.has(data.phase)) {
+    throw new Error(
+      `Unknown phase '${data.phase}'. Expected one of: ${[...phaseIds].join(", ")}`
+    );
+  }
 
   const fileName = `${data.id}.md`;
-  const phaseDir = data.phase.toLowerCase().replace(/\s+/g, "-");
+  const phaseDir = data.phase;
   const filePath = path.join(metricsDir, phaseDir, fileName);
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   try {

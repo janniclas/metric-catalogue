@@ -5,8 +5,18 @@ import path from "node:path";
 import assert from "node:assert/strict";
 import test from "node:test";
 import process from "node:process";
+import matter from "gray-matter";
 
 const scriptPath = path.resolve("scripts/issue-to-metric.ts");
+const defaultPhases = [
+  {
+    id: "plan",
+    name: "Plan",
+    description: "Planning phase",
+    icon: "calendar",
+    order: 1,
+  },
+];
 
 function runScript(args: string[], { cwd }: { cwd?: string } = {}) {
   return new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve, reject) => {
@@ -34,7 +44,7 @@ function runScript(args: string[], { cwd }: { cwd?: string } = {}) {
 
 function issueBody(overrides: Partial<Record<string, string>> = {}) {
   const values = {
-    title: "Security Requirements Coverage",
+    title: "Security: Requirements Coverage #1",
     id: "plan-security-requirements-coverage",
     phase: "plan",
     description: "Describe the metric.",
@@ -65,10 +75,15 @@ function issueBody(overrides: Partial<Record<string, string>> = {}) {
   );
 }
 
+async function writePhases(metricsDir: string, phases = defaultPhases) {
+  await fs.writeFile(path.join(metricsDir, "phases.json"), JSON.stringify(phases, null, 2));
+}
+
 test("issue-to-metric generates a markdown metric file", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
   const metricsDir = path.join(tempDir, "metrics");
   await fs.mkdir(metricsDir, { recursive: true });
+  await writePhases(metricsDir);
 
   const issuePath = path.join(tempDir, "issue.md");
   await fs.writeFile(issuePath, issueBody());
@@ -94,15 +109,16 @@ test("issue-to-metric generates a markdown metric file", async () => {
     "plan-security-requirements-coverage.md"
   );
   const content = await fs.readFile(metricPath, "utf8");
+  const parsed = matter(content);
 
-  assert.match(content, /id: plan-security-requirements-coverage/);
-  assert.match(content, /title: Security Requirements Coverage/);
-  assert.match(content, /phase: plan/);
-  assert.match(content, /tags:/);
-  assert.match(content, /related_tools:/);
-  assert.match(content, /depends_on:/);
-  assert.match(content, /thresholds:/);
-  assert.match(content, /references:/);
+  assert.equal(parsed.data.id, "plan-security-requirements-coverage");
+  assert.equal(parsed.data.title, "Security: Requirements Coverage #1");
+  assert.equal(parsed.data.phase, "plan");
+  assert.ok(Array.isArray(parsed.data.tags));
+  assert.ok(Array.isArray(parsed.data.related_tools));
+  assert.ok(Array.isArray(parsed.data.depends_on));
+  assert.ok(Array.isArray(parsed.data.thresholds));
+  assert.ok(Array.isArray(parsed.data.references));
   assert.match(content, /# Description/);
   assert.match(content, /# Measurement/);
   assert.match(content, /# Rationale/);
@@ -114,6 +130,7 @@ test("issue-to-metric rejects invalid metric id", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
   const metricsDir = path.join(tempDir, "metrics");
   await fs.mkdir(metricsDir, { recursive: true });
+  await writePhases(metricsDir);
 
   const issuePath = path.join(tempDir, "issue.md");
   await fs.writeFile(issuePath, issueBody({ id: "Invalid Id" }));
@@ -135,6 +152,7 @@ test("issue-to-metric rejects missing required fields", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
   const metricsDir = path.join(tempDir, "metrics");
   await fs.mkdir(metricsDir, { recursive: true });
+  await writePhases(metricsDir);
 
   const issuePath = path.join(tempDir, "issue.md");
   await fs.writeFile(issuePath, issueBody({ title: "" }));
@@ -156,6 +174,7 @@ test("issue-to-metric parses issue template with blank lines", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
   const metricsDir = path.join(tempDir, "metrics");
   await fs.mkdir(metricsDir, { recursive: true });
+  await writePhases(metricsDir);
 
   const issueFixture = path.resolve("scripts/__tests__/issue.md");
   const issuePath = path.join(tempDir, "issue.md");
@@ -181,4 +200,26 @@ test("issue-to-metric parses issue template with blank lines", async () => {
   assert.match(content, /title: f/);
   assert.match(content, /phase: plan/);
   assert.match(content, /# Description/);
+});
+
+test("issue-to-metric rejects unknown phases", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "metric-issue-"));
+  const metricsDir = path.join(tempDir, "metrics");
+  await fs.mkdir(metricsDir, { recursive: true });
+  await writePhases(metricsDir);
+
+  const issuePath = path.join(tempDir, "issue.md");
+  await fs.writeFile(issuePath, issueBody({ phase: "build" }));
+
+  const { code, stderr } = await runScript([
+    "--issue-file",
+    issuePath,
+    "--metrics-dir",
+    metricsDir,
+    "--issue-number",
+    "999",
+  ]);
+
+  assert.notEqual(code, 0);
+  assert.match(stderr, /Unknown phase/);
 });
