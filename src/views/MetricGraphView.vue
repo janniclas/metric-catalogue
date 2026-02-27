@@ -450,7 +450,12 @@ watch(displayedMetrics, (nextMetrics) => {
               Show all metrics
             </button>
             <p v-else class="catalogue-graph__hint">Scroll or pinch to zoom, drag to pan.</p>
-            <button class="catalogue-graph__action" type="button" @click="isExpanded = !isExpanded">
+            <button
+              v-if="!isMobile"
+              class="catalogue-graph__action"
+              type="button"
+              @click="isExpanded = !isExpanded"
+            >
               {{ isExpanded ? "Collapse view" : "Expand view" }}
             </button>
           </div>

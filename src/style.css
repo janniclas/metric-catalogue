@@ -533,6 +533,23 @@ button.ghost:hover,
   color: var(--ink);
 }
 
+.about-list {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.about-list li {
+  line-height: 1.55;
+}
+
+.section--dark .about-list {
+  color: var(--ink-muted);
+}
+
 .intro__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
@@ -629,6 +646,12 @@ button.ghost:hover,
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
 
 .phase-card {
