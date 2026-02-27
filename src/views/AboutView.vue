@@ -48,28 +48,22 @@ const phasesCount = computed(() => phases.value.length);
         <div class="intro__copy">
           <p class="eyebrow">What lives here</p>
           <div class="section-header">
-            <h2>Metrics are Markdown-first.</h2>
+            <h2>Actionable security metrics for real delivery teams.</h2>
           </div>
           <p class="section-subtitle">
-            Each metric lives in the repository as a Markdown file with YAML frontmatter. The build
-            pipeline validates the schema and produces an index so the UI can load quickly while the
-            source stays human-readable on GitHub.
+            The catalogue focuses on product-facing, measurable security metrics that can be
+            implemented in the SSDLC. Each metric is mapped to a lifecycle phase, grounded in
+            concrete activities, and paired with tools that can supply the data. The intent is to
+            make security measurement practical, repeatable, and connected to everyday delivery
+            work.
           </p>
-          <ul class="about-list">
-            <li>
-              Metrics live under <code>metrics/</code> and remain readable without this UI.
-            </li>
-            <li>
-              Phases are defined in <code>metrics/phases.json</code> and anchor metrics to the SSDLC.
-            </li>
-            <li>
-              The build script generates <code>public/metrics/index.json</code> for fast loading and
-              validation.
-            </li>
-          </ul>
+          <p class="section-subtitle">
+            We are building this as a community project so teams can share what works, refine
+            definitions together, and keep the catalogue current as tooling and practices evolve.
+          </p>
         </div>
         <div class="intro__visual">
-          <div class="intro__art">Markdown + YAML</div>
+          <div class="intro__art">Community-driven</div>
           <div class="stat-grid">
             <div class="stat-card">
               <span class="stat-label">Phases</span>
