@@ -160,6 +160,11 @@ function renderGraph() {
   svg.selectAll("*").remove();
   svg.attr("viewBox", `0 0 ${width} ${height}`);
 
+  svg.on("click", () => {
+    selectedMetricId.value = null;
+    selectedPhaseId.value = null;
+  });
+
   const zoomGroup = svg.append("g").attr("class", "catalogue-graph__viewport");
 
   const zoom = d3
@@ -240,7 +245,8 @@ function renderGraph() {
       return classes.join(" ");
     })
     .style("cursor", (node) => (node.role === "metric" || node.role === "phase" ? "pointer" : "default"))
-    .on("click", (_, node) => {
+    .on("click", (event, node) => {
+      event.stopPropagation();
       if (node.role === "metric") {
         selectedMetricId.value = node.id;
         selectedPhaseId.value = null;
