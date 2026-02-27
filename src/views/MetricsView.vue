@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import MetricCard from "../components/MetricCard.vue";
+import { filterMetrics } from "../lib/metricsFilter";
 
 const route = useRoute();
 const { phases, metrics, loading, error, phaseLabelMap, metricSearchTextById } =
@@ -57,45 +58,17 @@ const availableTools = computed(() => {
   return [...set].sort((a, b) => a.localeCompare(b));
 });
 
-const filteredMetrics = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  const phaseFilter = selectedPhaseSet.value;
-  const tagFilter = selectedTagSet.value;
-  const toolFilter = selectedToolSet.value;
-
-  return metrics.value.filter((metric) => {
-    if (query) {
-      const haystack = metricSearchTextById.value.get(metric.id) ?? "";
-      if (!haystack.includes(query)) {
-        return false;
-      }
-    }
-
-    if (phaseFilter.size > 0 && !phaseFilter.has(metric.phase)) {
-      return false;
-    }
-
-    if (tagFilter.size > 0) {
-      const metricTags = metric.tags ?? [];
-      if (!metricTags.some((tag) => tagFilter.has(tag))) {
-        return false;
-      }
-    }
-
-    if (toolFilter.size > 0) {
-      const metricTools = metric.related_tools ?? [];
-      if (!metricTools.some((tool) => toolFilter.has(tool))) {
-        return false;
-      }
-    }
-
-    if (requireThresholds.value && !(metric.thresholds?.length ?? 0)) {
-      return false;
-    }
-
-    return !(requireDependencies.value && !(metric.depends_on?.length ?? 0));
-  });
-});
+const filteredMetrics = computed(() =>
+  filterMetrics(metrics.value, {
+    query: search.value,
+    phaseFilter: selectedPhaseSet.value,
+    tagFilter: selectedTagSet.value,
+    toolFilter: selectedToolSet.value,
+    requireThresholds: requireThresholds.value,
+    requireDependencies: requireDependencies.value,
+    searchTextById: metricSearchTextById.value,
+  }),
+);
 
 const filteredCountLabel = computed(() => {
   if (loading.value || error.value) return "";

@@ -28,9 +28,8 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - [x] Update `README.md` to reflect the actual project (not the Vite template) and document build/test commands plus the metrics ingestion workflow.
 
 **Tests**
-
-- [ ] Ensure global stubs are cleaned between tests by adding `vi.unstubAllGlobals()` (or equivalent) in `src/test/setup.ts` to avoid cross-test leakage from `vi.stubGlobal`.
-- [ ] Add a focused unit test for the filter logic once it’s extracted (e.g., from `src/views/MetricsView.vue`) to prevent regressions in tag/tool/phase matching.
+- [x] Ensure global stubs are cleaned between tests by adding `vi.unstubAllGlobals()` (or equivalent) in `src/test/setup.ts` to avoid cross-test leakage from `vi.stubGlobal`.
+- [x] Add a focused unit test for the filter logic once it’s extracted (e.g., from `src/views/MetricsView.vue`) to prevent regressions in tag/tool/phase matching.
 
 **Implementation Notes**
 
@@ -48,3 +47,5 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - Added `src/env.d.ts` and removed env type casts in config getters.
 - Introduced Prettier config + npm scripts to enforce formatting and normalized `src/views/MetricsView.vue` + `vite.config.ts`.
 - Rewrote `README.md` to document project usage and workflows.
+- Added `vi.unstubAllGlobals()` to test cleanup to avoid stub leakage.
+- Extracted filter logic into `src/lib/metricsFilter.ts` with unit tests covering search, tag/tool/phase, thresholds, and dependencies.
