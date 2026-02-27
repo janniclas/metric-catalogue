@@ -15,8 +15,8 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - [x] Move global constants (e.g., repo/social URLs, propose-metric URL) into a single config module like `src/lib/config.ts` and consume from `src/App.vue`, `src/views/OverviewView.vue`, `src/views/MetricDetailView.vue`.
 
 **Performance + UX**
-- [ ] Precompute a normalized search index for metrics (e.g., `searchText`) in `src/lib/useMetricsCatalogue.ts` or a dedicated composable to avoid rebuilding large strings on every filter change in `src/views/MetricsView.vue`.
-- [ ] Provide a graceful fallback icon when `phase.icon` is missing or unknown (currently `iconMap[phase.icon]` can be `undefined`) in `src/views/OverviewView.vue`.
+- [x] Precompute a normalized search index for metrics (e.g., `searchText`) in `src/lib/useMetricsCatalogue.ts` or a dedicated composable to avoid rebuilding large strings on every filter change in `src/views/MetricsView.vue`.
+- [x] Provide a graceful fallback icon when `phase.icon` is missing or unknown (currently `iconMap[phase.icon]` can be `undefined`) in `src/views/OverviewView.vue`.
 
 **Best Practices + Maintainability**
 - [ ] Add `src/env.d.ts` to type `import.meta.env` values like `VITE_REPO_URL`, `VITE_REPO_BRANCH`, `VITE_BASE_PATH` instead of casting in `src/views/MetricDetailView.vue`.
@@ -37,3 +37,5 @@ Context: Review of the current implementation with a focus on redundancy reducti
 - Extracted `MetricCard` component to keep `MetricsView` template focused.
 - Consolidated repo URL/branch and social/proposal URLs under `src/lib/config.ts`.
 - Switched repo URL/branch accessors to lazy getters to avoid test env stubbing order issues.
+- Added a precomputed `metricSearchTextById` map to reduce filter work in `MetricsView`.
+- Added a default fallback icon when a phase icon key is missing.

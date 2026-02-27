@@ -67,6 +67,22 @@ export function useMetricsCatalogue() {
     }
     return map;
   });
+  const metricSearchTextById = computed(() => {
+    const map = new Map<string, string>();
+    for (const metric of metrics.value) {
+      const text = [
+        metric.title,
+        metric.id,
+        metric.markdown,
+        (metric.tags ?? []).join(" "),
+        (metric.related_tools ?? []).join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+      map.set(metric.id, text);
+    }
+    return map;
+  });
 
   const formattedUpdatedAt = computed(() => {
     if (!metricsIndex.value?.generated_at) return "";
@@ -87,6 +103,7 @@ export function useMetricsCatalogue() {
     phaseLabelMap,
     metricById,
     metricsByPhase,
+    metricSearchTextById,
     formattedUpdatedAt,
     reload: async () => {
       metricsIndex.value = null;

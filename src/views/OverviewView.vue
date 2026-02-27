@@ -26,6 +26,7 @@ const iconMap: Record<string, Component> = {
   settings: Settings,
   activity: Activity,
 };
+const fallbackIcon = Activity;
 
 const { phases, metrics, loading, error, formattedUpdatedAt, metricById } = useMetricsCatalogue();
 
@@ -120,7 +121,7 @@ const topLevelByPhase = computed(() => {
             <div class="phase-card__header">
               <h3 class="phase-card__title">{{ phase.name }}</h3>
               <div class="phase-card__icon">
-                <component :is="iconMap[phase.icon]" :size="24" />
+                <component :is="iconMap[phase.icon] ?? fallbackIcon" :size="24" />
               </div>
             </div>
             <p class="phase-card__desc">{{ phase.description }}</p>

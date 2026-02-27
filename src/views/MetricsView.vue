@@ -5,7 +5,8 @@ import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import MetricCard from "../components/MetricCard.vue";
 
 const route = useRoute();
-const { phases, metrics, loading, error, phaseLabelMap } = useMetricsCatalogue();
+const { phases, metrics, loading, error, phaseLabelMap, metricSearchTextById } =
+  useMetricsCatalogue();
 
 const search = ref("");
 const selectedPhases = ref<string[]>([]);
@@ -64,15 +65,7 @@ const filteredMetrics = computed(() => {
 
   return metrics.value.filter((metric) => {
     if (query) {
-      const haystack = [
-        metric.title,
-        metric.id,
-        metric.markdown,
-        (metric.tags ?? []).join(" "),
-        (metric.related_tools ?? []).join(" "),
-      ]
-        .join(" ")
-        .toLowerCase();
+      const haystack = metricSearchTextById.value.get(metric.id) ?? "";
       if (!haystack.includes(query)) {
         return false;
       }
