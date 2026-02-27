@@ -888,6 +888,7 @@ button.ghost:hover,
   padding: 18px 20px;
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .metric-detail__extras h3 {
@@ -906,6 +907,13 @@ button.ghost:hover,
 .metric-detail__extras a {
   color: var(--accent-strong);
   text-decoration: underline;
+}
+
+.metric-detail__extras li,
+.metric-detail__extras a,
+.metric-detail__extras p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .site-footer {
