@@ -16,16 +16,19 @@ const selectedMetricId = ref<string | null>(null);
 const selectedPhaseId = ref<string | null>(null);
 const isExpanded = ref(false);
 
-const maxInitialNodes = 30;
+const isMobile = ref(false);
+const maxInitialNodes = computed(() => (isMobile.value ? 16 : 30));
 
 const displayedMetrics = computed(() => {
-  if (showAll.value || metrics.value.length <= maxInitialNodes) {
+  if (showAll.value || metrics.value.length <= maxInitialNodes.value) {
     return metrics.value;
   }
-  return metrics.value.slice(0, maxInitialNodes);
+  return metrics.value.slice(0, maxInitialNodes.value);
 });
 
-const isLimited = computed(() => metrics.value.length > maxInitialNodes && !showAll.value);
+const isLimited = computed(
+  () => metrics.value.length > maxInitialNodes.value && !showAll.value,
+);
 
 const phaseColorMap = computed(() => {
   const domain = phases.value.map((phase) => phase.id);
@@ -148,12 +151,20 @@ function renderGraph() {
   if (!svgRef.value || !containerRef.value) return;
 
   const width = containerRef.value.clientWidth || 720;
+  const compactHeight = Math.max(320, Math.round(width * 0.8));
+  const regularHeight = Math.max(440, Math.round(width * 0.65));
+  const expandedHeight = Math.max(
+    isMobile.value ? 420 : 560,
+    Math.round(window.innerHeight * (isMobile.value ? 0.6 : 0.75)),
+  );
   const height = isExpanded.value
-    ? Math.max(560, Math.round(window.innerHeight * 0.75))
-    : Math.max(440, Math.round(width * 0.65));
+    ? expandedHeight
+    : isMobile.value
+      ? compactHeight
+      : regularHeight;
   const centerX = width / 2;
   const centerY = height / 2;
-  const phaseRadius = Math.min(width, height) * 0.28;
+  const phaseRadius = Math.min(width, height) * (isMobile.value ? 0.24 : 0.28);
 
   const svg = d3.select(svgRef.value);
   svg.selectAll("*").remove();
@@ -169,7 +180,7 @@ function renderGraph() {
 
   const zoom = d3
     .zoom<SVGSVGElement, unknown>()
-    .scaleExtent([0.5, 2.4])
+    .scaleExtent([isMobile.value ? 0.35 : 0.5, isMobile.value ? 2.0 : 2.4])
     .on("zoom", (event) => {
       zoomGroup.attr("transform", event.transform);
     });
@@ -302,9 +313,13 @@ function renderGraph() {
 
   const labelRadius = (node: GraphNode) => {
     const labelLength = node.label?.length ?? 0;
-    const base = node.role === "root" ? 36 : node.role === "phase" ? 30 : 24;
-    return base + Math.min(70, labelLength * 2.6);
+    const base = node.role === "root" ? 34 : node.role === "phase" ? 28 : 22;
+    const scale = isMobile.value ? 2.1 : 2.6;
+    return base + Math.min(70, labelLength * scale);
   };
+
+  const phaseLinkDistance = isMobile.value ? 100 : 120;
+  const dependencyDistance = isMobile.value ? 120 : 140;
 
   simulation = d3
     .forceSimulation(nodeList)
@@ -313,7 +328,7 @@ function renderGraph() {
       d3
         .forceLink<GraphNode, GraphLink>(linkList)
         .id((node) => node.id)
-        .distance((link) => (link.role === "phase-link" ? 120 : 140))
+        .distance((link) => (link.role === "phase-link" ? phaseLinkDistance : dependencyDistance))
         .strength((link) => (link.role === "phase-link" ? 0.95 : 0.7)),
     )
     .force(
@@ -361,8 +376,15 @@ function renderGraph() {
 }
 
 let resizeObserver: ResizeObserver | null = null;
+let mobileListener: (() => void) | null = null;
 
 onMounted(() => {
+  const updateIsMobile = () => {
+    isMobile.value = window.innerWidth <= 720;
+  };
+  updateIsMobile();
+  window.addEventListener("resize", updateIsMobile, { passive: true });
+  mobileListener = () => window.removeEventListener("resize", updateIsMobile);
   if (containerRef.value) {
     containerWidth.value = containerRef.value.clientWidth || 0;
     if (typeof ResizeObserver !== "undefined") {
@@ -382,10 +404,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   resizeObserver?.disconnect();
   stopSimulation();
+  mobileListener?.();
 });
 
 watch(
-  [nodes, links, containerWidth, showAll, selectedMetricId, selectedPhaseId, isExpanded],
+  [nodes, links, containerWidth, showAll, selectedMetricId, selectedPhaseId, isExpanded, isMobile],
   () => {
     void nextTick(renderGraph);
   },

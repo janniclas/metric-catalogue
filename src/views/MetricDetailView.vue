@@ -20,8 +20,6 @@ const renderedMarkdown = computed(() => {
   return renderMarkdown(metric.value.markdown);
 });
 
-const dependencyList = computed(() => metric.value?.depends_on ?? []);
-
 const dependencyMaps = computed(() => buildDependencyMaps(metrics.value));
 
 const parentMetrics = computed(() => {

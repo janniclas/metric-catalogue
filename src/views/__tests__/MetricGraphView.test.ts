@@ -62,7 +62,7 @@ describe("MetricGraphView", () => {
   it("shows phase details when clicking a phase node", async () => {
     mockFetch(metricsIndexFixture);
 
-    const { getByRole, getByText, container } = await renderWithRouter(MetricGraphView, {
+    const { getByText, container } = await renderWithRouter(MetricGraphView, {
       route: "/graph",
       routes: [
         { path: "/graph", component: MetricGraphView },

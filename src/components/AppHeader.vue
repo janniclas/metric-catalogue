@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { headerSocialLinks, proposeMetricUrl } from "../lib/config";
 import logoUrl from "../assets/SPHA_Icon.svg";
 
 const isScrolled = ref(false);
 const isMetricsOpen = ref(false);
+const isMenuOpen = ref(false);
 const metricsMenuRef = ref<HTMLElement | null>(null);
+const navRef = ref<HTMLElement | null>(null);
 const route = useRoute();
 
 const isMetricsActive = computed(() => {
@@ -17,40 +19,79 @@ function updateScrollState() {
   isScrolled.value = window.scrollY > 48;
 }
 
-function closeMetricsMenu(event?: Event) {
-  if (!event || !metricsMenuRef.value) {
-    isMetricsOpen.value = false;
+function closeAllMenus() {
+  isMetricsOpen.value = false;
+  isMenuOpen.value = false;
+}
+
+function handleDocumentClick(event?: Event) {
+  if (!event) {
+    closeAllMenus();
     return;
   }
   const target = event.target as Node | null;
-  if (target && metricsMenuRef.value.contains(target)) return;
-  isMetricsOpen.value = false;
+  if (target && navRef.value?.contains(target)) {
+    if (metricsMenuRef.value && target && metricsMenuRef.value.contains(target)) return;
+    isMetricsOpen.value = false;
+    return;
+  }
+  closeAllMenus();
 }
 
 onMounted(() => {
   updateScrollState();
   window.addEventListener("scroll", updateScrollState, { passive: true });
-  document.addEventListener("click", closeMetricsMenu);
+  document.addEventListener("click", handleDocumentClick);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", updateScrollState);
-  document.removeEventListener("click", closeMetricsMenu);
+  document.removeEventListener("click", handleDocumentClick);
 });
+
+watch(
+  () => route.fullPath,
+  () => {
+    closeAllMenus();
+  },
+);
 </script>
 
 <template>
-  <nav class="navbar" :class="isScrolled ? 'navbar--floating' : 'navbar--banner'">
+  <nav ref="navRef" class="navbar" :class="isScrolled ? 'navbar--floating' : 'navbar--banner'">
     <div class="navbar__inner">
-      <RouterLink to="/" class="navbar__brand">
+      <RouterLink to="/" class="navbar__brand" @click="closeAllMenus">
         <img class="brand-logo" :src="logoUrl" alt="SPHA logo" />
         <span class="brand-text">
           <span class="brand-title">SPHA</span>
           <span class="brand-sub">Metric Catalogue</span>
         </span>
       </RouterLink>
-      <div class="navbar__links">
-        <RouterLink to="/" class="nav-link" active-class="nav-link--active" end
+      <button
+        class="navbar__toggle"
+        type="button"
+        aria-controls="primary-navigation"
+        :aria-expanded="isMenuOpen"
+        @click="isMenuOpen = !isMenuOpen"
+      >
+        <span class="navbar__toggle-icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="navbar__toggle-text">Menu</span>
+      </button>
+      <div
+        id="primary-navigation"
+        class="navbar__links"
+        :class="isMenuOpen ? 'is-open' : ''"
+      >
+        <RouterLink
+          to="/"
+          class="nav-link"
+          active-class="nav-link--active"
+          end
+          @click="closeAllMenus"
           >Overview
         </RouterLink>
         <div
@@ -75,7 +116,7 @@ onBeforeUnmount(() => {
               to="/metrics"
               class="nav-dropdown__link"
               active-class="nav-dropdown__link--active"
-              @click="isMetricsOpen = false"
+              @click="closeAllMenus"
             >
               List view
             </RouterLink>
@@ -83,13 +124,19 @@ onBeforeUnmount(() => {
               to="/graph"
               class="nav-dropdown__link"
               active-class="nav-dropdown__link--active"
-              @click="isMetricsOpen = false"
+              @click="closeAllMenus"
             >
               Graph view
             </RouterLink>
           </div>
         </div>
-        <a class="nav-cta" :href="proposeMetricUrl" target="_blank" rel="noopener noreferrer">
+        <a
+          class="nav-cta"
+          :href="proposeMetricUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          @click="closeAllMenus"
+        >
           Propose a metric
         </a>
         <div v-if="!isScrolled" class="navbar__social">

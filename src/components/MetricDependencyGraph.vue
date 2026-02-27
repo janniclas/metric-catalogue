@@ -104,10 +104,14 @@ function renderGraph() {
   if (!svgRef.value || !containerRef.value || !isOpen.value) return;
 
   const width = containerRef.value.clientWidth || 600;
-  const height = Math.max(260, Math.round(width * 0.6));
-  const maxRadius = Math.max(120, Math.min(width, height) / 2 - 36);
-  const parentRadius = Math.max(80, maxRadius * 0.6);
-  const childRadius = Math.max(110, maxRadius * 0.9);
+  const isNarrow = width < 520;
+  const height = Math.max(isNarrow ? 220 : 260, Math.round(width * (isNarrow ? 0.75 : 0.6)));
+  const maxRadius = Math.max(
+    isNarrow ? 96 : 120,
+    Math.min(width, height) / 2 - (isNarrow ? 24 : 36),
+  );
+  const parentRadius = Math.max(isNarrow ? 68 : 80, maxRadius * 0.6);
+  const childRadius = Math.max(isNarrow ? 90 : 110, maxRadius * 0.9);
   const centerX = width / 2;
   const centerY = height / 2;
 
@@ -184,6 +188,9 @@ function renderGraph() {
 let resizeObserver: ResizeObserver | null = null;
 
 onMounted(() => {
+  if (typeof window !== "undefined" && window.innerWidth <= 720) {
+    isOpen.value = false;
+  }
   if (containerRef.value) {
     containerWidth.value = containerRef.value.clientWidth || 0;
     if (typeof ResizeObserver !== "undefined") {
