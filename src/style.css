@@ -925,6 +925,14 @@ button.ghost:hover,
   align-items: start;
 }
 
+.catalogue-graph--expanded .catalogue-graph__container {
+  width: calc(100% - 48px);
+}
+
+.catalogue-graph--expanded .catalogue-graph__layout {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+}
+
 .catalogue-graph__surface {
   background: var(--surface);
   border-radius: var(--radius-md);
@@ -933,6 +941,10 @@ button.ghost:hover,
   display: grid;
   gap: 16px;
   min-width: 0;
+}
+
+.catalogue-graph--expanded .catalogue-graph__surface {
+  min-height: 75vh;
 }
 
 .catalogue-graph__controls {
@@ -968,6 +980,10 @@ button.ghost:hover,
   border: 1px dashed rgba(32, 28, 60, 0.16);
   background: linear-gradient(135deg, rgba(122, 107, 255, 0.08), rgba(12, 8, 35, 0.04));
   padding: 12px;
+}
+
+.catalogue-graph--expanded .catalogue-graph__canvas {
+  min-height: calc(75vh - 84px);
 }
 
 .catalogue-graph__canvas svg {
