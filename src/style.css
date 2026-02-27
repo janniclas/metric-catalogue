@@ -220,6 +220,11 @@ img {
   border-color: var(--accent);
 }
 
+.nav-link--static {
+  cursor: default;
+  color: var(--ink);
+}
+
 .nav-dropdown {
   position: relative;
 }

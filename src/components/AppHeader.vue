@@ -7,6 +7,7 @@ import logoUrl from "../assets/SPHA_Icon.svg";
 const isScrolled = ref(false);
 const isMetricsOpen = ref(false);
 const isMenuOpen = ref(false);
+const isMobile = ref(false);
 const metricsMenuRef = ref<HTMLElement | null>(null);
 const navRef = ref<HTMLElement | null>(null);
 const route = useRoute();
@@ -15,8 +16,14 @@ const isMetricsActive = computed(() => {
   return route.path.startsWith("/metrics") || route.path.startsWith("/graph");
 });
 
+const isMetricsMenuOpen = computed(() => (isMobile.value ? true : isMetricsOpen.value));
+
 function updateScrollState() {
   isScrolled.value = window.scrollY > 48;
+}
+
+function updateIsMobile() {
+  isMobile.value = window.innerWidth <= 900;
 }
 
 function closeAllMenus() {
@@ -32,7 +39,9 @@ function handleDocumentClick(event?: Event) {
   const target = event.target as Node | null;
   if (target && navRef.value?.contains(target)) {
     if (metricsMenuRef.value && target && metricsMenuRef.value.contains(target)) return;
-    isMetricsOpen.value = false;
+    if (!isMobile.value) {
+      isMetricsOpen.value = false;
+    }
     return;
   }
   closeAllMenus();
@@ -40,12 +49,15 @@ function handleDocumentClick(event?: Event) {
 
 onMounted(() => {
   updateScrollState();
+  updateIsMobile();
   window.addEventListener("scroll", updateScrollState, { passive: true });
+  window.addEventListener("resize", updateIsMobile, { passive: true });
   document.addEventListener("click", handleDocumentClick);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", updateScrollState);
+  window.removeEventListener("resize", updateIsMobile);
   document.removeEventListener("click", handleDocumentClick);
 });
 
@@ -81,11 +93,7 @@ watch(
         </span>
         <span class="navbar__toggle-text">Menu</span>
       </button>
-      <div
-        id="primary-navigation"
-        class="navbar__links"
-        :class="isMenuOpen ? 'is-open' : ''"
-      >
+      <div id="primary-navigation" class="navbar__links" :class="isMenuOpen ? 'is-open' : ''">
         <RouterLink
           to="/"
           class="nav-link"
@@ -97,21 +105,23 @@ watch(
         <div
           ref="metricsMenuRef"
           class="nav-dropdown"
-          :class="isMetricsOpen ? 'nav-dropdown--open' : ''"
+          :class="isMetricsMenuOpen ? 'nav-dropdown--open' : ''"
         >
           <button
+            v-if="!isMobile"
             class="nav-link nav-link--button"
             :class="isMetricsActive ? 'nav-link--active' : ''"
             type="button"
             aria-haspopup="true"
-            :aria-expanded="isMetricsOpen"
+            :aria-expanded="isMetricsMenuOpen"
             aria-controls="metrics-menu"
             @click.stop="isMetricsOpen = !isMetricsOpen"
           >
             Metrics
             <span class="nav-dropdown__chevron" aria-hidden="true">▾</span>
           </button>
-          <div id="metrics-menu" class="nav-dropdown__menu" v-show="isMetricsOpen">
+          <span v-else class="nav-link nav-link--static">Metrics</span>
+          <div id="metrics-menu" class="nav-dropdown__menu" v-show="isMetricsMenuOpen">
             <RouterLink
               to="/metrics"
               class="nav-dropdown__link"

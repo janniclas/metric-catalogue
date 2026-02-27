@@ -26,9 +26,7 @@ const displayedMetrics = computed(() => {
   return metrics.value.slice(0, maxInitialNodes.value);
 });
 
-const isLimited = computed(
-  () => metrics.value.length > maxInitialNodes.value && !showAll.value,
-);
+const isLimited = computed(() => metrics.value.length > maxInitialNodes.value && !showAll.value);
 
 const phaseColorMap = computed(() => {
   const domain = phases.value.map((phase) => phase.id);
@@ -157,11 +155,7 @@ function renderGraph() {
     isMobile.value ? 420 : 560,
     Math.round(window.innerHeight * (isMobile.value ? 0.6 : 0.75)),
   );
-  const height = isExpanded.value
-    ? expandedHeight
-    : isMobile.value
-      ? compactHeight
-      : regularHeight;
+  const height = isExpanded.value ? expandedHeight : isMobile.value ? compactHeight : regularHeight;
   const centerX = width / 2;
   const centerY = height / 2;
   const phaseRadius = Math.min(width, height) * (isMobile.value ? 0.24 : 0.28);
@@ -204,7 +198,7 @@ function renderGraph() {
   }
 
   const nodeList = nodes.value.map((node) => {
-    const cloned = { ...node } as GraphNode & { fx?: number; fy?: number };
+    const cloned = { ...node } as GraphNode;
     if (node.role === "root") {
       cloned.fx = centerX;
       cloned.fy = centerY;

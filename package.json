@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "metrics:build": "tsx scripts/build-metrics-index.ts",
+    "metrics:build": "node --import tsx scripts/build-metrics-index.ts",
     "build": "npm run metrics:build && vue-tsc -p tsconfig.app.json && vite build",
     "test:node": "NODE_OPTIONS=--import=tsx node --test scripts/__tests__/*.ts",
     "test:ui": "vitest run",
