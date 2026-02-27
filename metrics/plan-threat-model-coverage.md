@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Track how many critical features have a documented threat model before implementation begins.
 
 # Measurement
+
 Divide the count of critical features with a threat model by the total number of critical features planned for the release.
 
 # Notes
+
 Helps ensure that high-risk areas are assessed before coding starts.

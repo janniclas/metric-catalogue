@@ -23,9 +23,9 @@ describe("MetricsView", () => {
     const { findAllByTestId, getByLabelText, getAllByTestId } = await renderWithRouter(
       MetricsView,
       {
-      route: "/metrics?phase=plan",
-      routes: [metricsRoute, detailRoute],
-      }
+        route: "/metrics?phase=plan",
+        routes: [metricsRoute, detailRoute],
+      },
     );
 
     const cards = await findAllByTestId("metric-card");
@@ -46,9 +46,9 @@ describe("MetricsView", () => {
     const { findAllByTestId, getByLabelText, getAllByTestId } = await renderWithRouter(
       MetricsView,
       {
-      route: "/metrics",
-      routes: [metricsRoute, detailRoute],
-      }
+        route: "/metrics",
+        routes: [metricsRoute, detailRoute],
+      },
     );
 
     await findAllByTestId("metric-card");

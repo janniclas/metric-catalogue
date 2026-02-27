@@ -131,9 +131,13 @@ const sourceUrl = computed(() => {
           <div>
             <h3>Source file</h3>
             <p v-if="sourceUrl">
-              <a :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ metric.source_path }}</a>
+              <a :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{
+                metric.source_path
+              }}</a>
             </p>
-            <p v-else><code>{{ metric.source_path }}</code></p>
+            <p v-else>
+              <code>{{ metric.source_path }}</code>
+            </p>
           </div>
         </section>
       </div>

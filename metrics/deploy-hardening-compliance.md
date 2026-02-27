@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Measure how many deployment environments meet the defined hardening baseline.
 
 # Measurement
+
 Divide the number of environments passing hardening checks by the total number of environments.
 
 # Notes
+
 Ensures production environments remain aligned with security baselines.

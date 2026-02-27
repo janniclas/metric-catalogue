@@ -185,9 +185,7 @@ async function main() {
   ensureId(data.id);
   const phaseIds = await loadPhaseIds(phasesFile);
   if (!phaseIds.has(data.phase)) {
-    throw new Error(
-      `Unknown phase '${data.phase}'. Expected one of: ${[...phaseIds].join(", ")}`
-    );
+    throw new Error(`Unknown phase '${data.phase}'. Expected one of: ${[...phaseIds].join(", ")}`);
   }
 
   const fileName = `${data.id}.md`;

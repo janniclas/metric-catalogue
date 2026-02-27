@@ -31,14 +31,13 @@ onBeforeUnmount(() => {
         </span>
       </RouterLink>
       <div class="navbar__links">
-        <RouterLink to="/" class="nav-link" active-class="nav-link--active" end>Overview</RouterLink>
-        <RouterLink to="/metrics" class="nav-link" active-class="nav-link--active">Metrics</RouterLink>
-        <a
-          class="nav-cta"
-          :href="proposeMetricUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <RouterLink to="/" class="nav-link" active-class="nav-link--active" end
+          >Overview
+        </RouterLink>
+        <RouterLink to="/metrics" class="nav-link" active-class="nav-link--active"
+          >Metrics
+        </RouterLink>
+        <a class="nav-cta" :href="proposeMetricUrl" target="_blank" rel="noopener noreferrer">
           Propose a metric
         </a>
         <div v-if="!isScrolled" class="navbar__social">

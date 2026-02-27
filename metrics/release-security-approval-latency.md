@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Track the median time to obtain security approval for release packages.
 
 # Measurement
+
 Measure the time between security review request and approval completion.
 
 # Notes
+
 Helps identify bottlenecks in release governance.

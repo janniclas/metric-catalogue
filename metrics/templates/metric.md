@@ -17,10 +17,13 @@ references:
 ---
 
 # Description
+
 Describe what the metric measures and why it matters.
 
 # Measurement
+
 Explain how to measure the metric and what data sources are needed.
 
 # Notes
+
 Add any caveats, constraints, or interpretation guidance.

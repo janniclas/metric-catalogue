@@ -8,7 +8,7 @@ export async function renderWithRouter(
   {
     route = "/",
     routes = [{ path: "/", component }],
-  }: { route?: string; routes?: RouteRecordRaw[] } = {}
+  }: { route?: string; routes?: RouteRecordRaw[] } = {},
 ) {
   const router: Router = createRouter({
     history: createMemoryHistory(),
@@ -47,7 +47,7 @@ export async function flushPromises() {
 
 export async function waitFor(
   predicate: () => boolean,
-  { timeout = 1000, interval = 10 }: { timeout?: number; interval?: number } = {}
+  { timeout = 1000, interval = 10 }: { timeout?: number; interval?: number } = {},
 ) {
   const start = Date.now();
   while (!predicate()) {

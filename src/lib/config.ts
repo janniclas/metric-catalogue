@@ -43,6 +43,5 @@ export const proposeMetricUrl = getProposeMetricUrl();
 export const headerSocialLinks = [github, linkedin];
 export const footerLinks = [github, linkedin, fraunhofer];
 export const getRepoUrl = () => import.meta.env.VITE_REPO_URL;
-export const getRepoBranch = () =>
-  import.meta.env.VITE_REPO_BRANCH ?? "main";
+export const getRepoBranch = () => import.meta.env.VITE_REPO_BRANCH ?? "main";
 export type { LinkConfig };

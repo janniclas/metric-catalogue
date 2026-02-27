@@ -9,11 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <RouterLink
-    :to="`/metrics/${metric.id}`"
-    class="metric-card"
-    data-testid="metric-card"
-  >
+  <RouterLink :to="`/metrics/${metric.id}`" class="metric-card" data-testid="metric-card">
     <header>
       <p class="metric-phase">{{ phaseLabel }}</p>
       <h3>{{ metric.title }}</h3>

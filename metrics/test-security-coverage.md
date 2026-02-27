@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Measure coverage of security-focused test cases in the test suite.
 
 # Measurement
+
 Calculate the percentage of required security tests executed in CI.
 
 # Notes
+
 Helps ensure regression tests cover known security scenarios.

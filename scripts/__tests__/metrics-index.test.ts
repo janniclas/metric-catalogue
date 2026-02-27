@@ -86,7 +86,7 @@ test("fails when the metric phase is unknown", async () => {
         outputDir: path.join(root, "public", "metrics"),
         outputPath: path.join(root, "public", "metrics", "index.json"),
       }),
-    /Unknown phase/
+    /Unknown phase/,
   );
 });
 
@@ -116,7 +116,7 @@ test("fails on duplicate metric ids", async () => {
         outputDir: path.join(root, "public", "metrics"),
         outputPath: path.join(root, "public", "metrics", "index.json"),
       }),
-    /Duplicate metric id/
+    /Duplicate metric id/,
   );
 });
 
@@ -139,7 +139,7 @@ test("fails when depends_on references unknown metrics", async () => {
         outputDir: path.join(root, "public", "metrics"),
         outputPath: path.join(root, "public", "metrics", "index.json"),
       }),
-    /depends on unknown id/
+    /depends on unknown id/,
   );
 });
 
@@ -162,6 +162,6 @@ test("fails when the metric body is empty", async () => {
         outputDir: path.join(root, "public", "metrics"),
         outputPath: path.join(root, "public", "metrics", "index.json"),
       }),
-    /Metric body is empty/
+    /Metric body is empty/,
   );
 });

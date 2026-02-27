@@ -136,7 +136,11 @@ function toggleFilter(key: keyof typeof openFilters.value) {
         <aside class="filters">
           <label class="search">
             <span>Search</span>
-            <input v-model="search" type="search" placeholder="Search by title, id, or description" />
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Search by title, id, or description"
+            />
           </label>
 
           <div class="filter-group">

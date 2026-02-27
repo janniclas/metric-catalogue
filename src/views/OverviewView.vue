@@ -74,17 +74,12 @@ const topLevelByPhase = computed(() => {
         <p class="eyebrow">SSDLC Metric Catalogue</p>
         <h1>Security metrics that map cleanly to software delivery.</h1>
         <p class="subtitle">
-          Browse the phases of the SSDLC and the top-level metrics that define how security is measured
-          across the lifecycle.
+          Browse the phases of the SSDLC and the top-level metrics that define how security is
+          measured across the lifecycle.
         </p>
         <div class="hero__actions">
           <router-link class="primary" to="/metrics">View all metrics</router-link>
-          <a
-            class="ghost"
-            :href="proposeMetricUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a class="ghost" :href="proposeMetricUrl" target="_blank" rel="noopener noreferrer">
             Propose a metric
           </a>
         </div>
@@ -103,8 +98,8 @@ const topLevelByPhase = computed(() => {
         <div class="section-header section-header--inline">
           <h2>SSDLC phases</h2>
           <p class="section-subtitle section-subtitle--inline">
-            Top-level metrics are those that are not dependencies of other metrics. Each card shows the
-            metrics that define success for that phase.
+            Top-level metrics are those that are not dependencies of other metrics. Each card shows
+            the metrics that define success for that phase.
           </p>
         </div>
 

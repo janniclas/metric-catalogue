@@ -86,7 +86,7 @@ async function loadPhases(phasesPath: string) {
   const phases = PhasesSchema.parse(JSON.parse(raw));
   assertUnique(
     phases.map((phase) => phase.id),
-    "phase id"
+    "phase id",
   );
   return phases.sort((a, b) => a.order - b.order);
 }
@@ -122,7 +122,7 @@ async function loadMetrics({
 
     if (!phaseIds.has(attributes.phase)) {
       throw new Error(
-        `Unknown phase '${attributes.phase}' in ${filePath}. Expected one of: ${[...phaseIds].join(", ")}`
+        `Unknown phase '${attributes.phase}' in ${filePath}. Expected one of: ${[...phaseIds].join(", ")}`,
       );
     }
 
@@ -135,7 +135,7 @@ async function loadMetrics({
 
   assertUnique(
     metrics.map((metric) => metric.id as string),
-    "metric id"
+    "metric id",
   );
 
   const metricIds = new Set(metrics.map((metric) => metric.id as string));
@@ -148,9 +148,7 @@ async function loadMetrics({
     }
   }
 
-  return metrics.sort((a, b) =>
-    String(a.title ?? "").localeCompare(String(b.title ?? ""))
-  );
+  return metrics.sort((a, b) => String(a.title ?? "").localeCompare(String(b.title ?? "")));
 }
 
 export async function buildMetricsIndex({

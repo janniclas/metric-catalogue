@@ -27,11 +27,11 @@ function runScript(args: string[], { cwd }: { cwd?: string } = {}) {
     let stdout = "";
     let stderr = "";
 
-    child.stdout.on("data", (data: { toString: () => string; }) => {
+    child.stdout.on("data", (data: { toString: () => string }) => {
       stdout += data.toString();
     });
 
-    child.stderr.on("data", (data: { toString: () => string; }) => {
+    child.stderr.on("data", (data: { toString: () => string }) => {
       stderr += data.toString();
     });
 
@@ -53,7 +53,8 @@ function issueBody(overrides: Partial<Record<string, string>> = {}) {
     tags: "requirements, governance",
     related_tools: "jira, github",
     depends_on: "plan-threat-model-coverage",
-    thresholds: "Coverage target | >= 90% | Percentage of epics with explicit security requirements.",
+    thresholds:
+      "Coverage target | >= 90% | Percentage of epics with explicit security requirements.",
     references: "https://owasp.org/www-project-application-security-verification-standard/",
     notes: "Extra notes.",
     ...overrides,
@@ -103,11 +104,7 @@ test("issue-to-metric generates a markdown metric file", async () => {
   assert.ok(outputLines.some((line) => line.startsWith("METRIC_PATH=")));
   assert.ok(outputLines.some((line) => line.startsWith("BRANCH_NAME=")));
 
-  const metricPath = path.join(
-    metricsDir,
-    "plan",
-    "plan-security-requirements-coverage.md"
-  );
+  const metricPath = path.join(metricsDir, "plan", "plan-security-requirements-coverage.md");
   const content = await fs.readFile(metricPath, "utf8");
   const parsed = matter(content);
 

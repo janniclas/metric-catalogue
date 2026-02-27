@@ -16,10 +16,13 @@ references:
 ---
 
 # Description
+
 Measure how many planned epics or features have explicit security requirements before implementation begins.
 
 # Measurement
+
 Calculate the percentage of epics with at least one security requirement documented in the planning system.
 
 # Notes
+
 Higher coverage reduces late-stage security surprises and rework.

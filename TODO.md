@@ -1,6 +1,7 @@
 # Metric Catalogue Implementation To-Do (Phase 1)
 
 ## 1) Confirm Core Tech Decisions
+
 - Data format: Markdown files with YAML frontmatter in `metrics/`.
 - Frontmatter parser: use `front-matter`.
 - Markdown renderer: use `marked` for client-side rendering and sanitize HTML with `DOMPurify`.
@@ -9,6 +10,7 @@
 - Hosting: GitHub Pages with Vite (confirm `base` path in `vite.config.ts`).
 
 ## 2) Define Minimal Metric Schema (v1)
+
 - Required fields: `id`, `title`, `phase`.
 - Optional fields: `thresholds`, `tags`, `related_tools`, `depends_on`, `references`.
 - SSDLC phase taxonomy: Plan, Code, Build, Test, Release, Deploy, Operate, Monitor.
@@ -16,25 +18,30 @@
 - Dependency rules: confirm how hierarchical metrics are represented (`depends_on` list of ids).
 
 ## 3) Establish Repository Structure
+
 - Create `metrics/` directory for Markdown files.
 - Add `metrics/README.md` describing the schema briefly.
 - Add `metrics/templates/metric.md` template.
 - Add `.github/PULL_REQUEST_TEMPLATE.md` aligned with schema.
 
 ## 4) Implement Data Ingestion (Build-Time First)
+
 - Add a Node script (e.g., `scripts/build-metrics-index.ts`) to parse Markdown and emit `metrics/index.json`.
 - Validate frontmatter against schema during index generation (fail on invalid).
 - Decide whether to run script as part of `npm run build` or separate `npm run metrics:build`.
 
 ## 5) CI Validation Setup (Minimal)
+
 - Add a CI step to run the index generation + schema validation.
 - Decide CI provider: GitHub Actions.
 - Decide trigger: pull requests to `main`.
 
 ## Open Questions For Phase 1
+
 - Confirm the icon format for phases (e.g., icon name, SVG path, or emoji).
 
 ## Implemented So Far
+
 - Added `metrics/` structure with `metrics/phases.json`, `metrics/README.md`, and `metrics/templates/metric.md`.
 - Added sample metric `metrics/plan-security-requirements-coverage.md`.
 - Added `scripts/metrics-index.mjs` + `scripts/build-metrics-index.mjs` to validate metrics and generate `public/metrics/index.json`.
@@ -56,5 +63,6 @@
   - Script at `scripts/issue-to-metric.mjs` to generate metric markdown files.
 
 ## Requirements Added
+
 - The full metrics list lives in its own route (`/metrics`).
 - The app includes a global navbar to navigate between overview and metrics.

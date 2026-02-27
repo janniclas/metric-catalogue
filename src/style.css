@@ -31,7 +31,8 @@ body {
   margin: 0;
   font-family: "Manrope", "Outfit", sans-serif;
   color: var(--ink);
-  background: radial-gradient(circle at top left, #20125e 0%, transparent 45%),
+  background:
+    radial-gradient(circle at top left, #20125e 0%, transparent 45%),
     radial-gradient(circle at 25% 10%, #120a3a 0%, transparent 50%),
     linear-gradient(160deg, #09051f 0%, #120a3a 45%, #0b0724 100%);
   min-height: 100vh;
@@ -89,8 +90,13 @@ img {
 .navbar {
   position: sticky;
   z-index: 10;
-  transition: padding 0.25s ease, margin 0.25s ease, border-radius 0.25s ease,
-    box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease,
+  transition:
+    padding 0.25s ease,
+    margin 0.25s ease,
+    border-radius 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
     top 0.25s ease;
 }
 
@@ -203,7 +209,10 @@ img {
   border: 1px solid var(--border-light);
   color: var(--ink);
   background: rgba(255, 255, 255, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .social-link svg {
@@ -229,7 +238,8 @@ img {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 35%, rgba(122, 107, 255, 0.26), transparent 55%),
+  background:
+    radial-gradient(circle at 20% 35%, rgba(122, 107, 255, 0.26), transparent 55%),
     radial-gradient(circle at 80% 20%, rgba(92, 74, 224, 0.3), transparent 50%);
   opacity: 0.9;
   pointer-events: none;
@@ -288,7 +298,10 @@ button,
   font-weight: 600;
   padding: 12px 22px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -541,7 +554,10 @@ button.ghost:hover,
 .phase-card--link {
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .phase-card--link:hover {
@@ -744,7 +760,10 @@ button.ghost:hover,
   display: grid;
   gap: 14px;
   box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .metric-card h3 {
@@ -947,7 +966,10 @@ button.ghost:hover,
   border: 1px solid var(--border-light);
   color: var(--ink);
   background: rgba(255, 255, 255, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .footer-link svg {

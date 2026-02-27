@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Measure the percentage of services with current incident response runbooks and on-call coverage.
 
 # Measurement
+
 Count services with reviewed runbooks in the last 6 months divided by total services.
 
 # Notes
+
 Keeps response posture aligned with operational reality.

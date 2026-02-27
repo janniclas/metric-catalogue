@@ -36,7 +36,7 @@ describe("MetricDetailView", () => {
       name: "metrics/plan-security-requirements-coverage.md",
     });
     expect(sourceLink.getAttribute("href")).toBe(
-      "https://github.com/example/metric-catalogue/blob/main/metrics/plan-security-requirements-coverage.md"
+      "https://github.com/example/metric-catalogue/blob/main/metrics/plan-security-requirements-coverage.md",
     );
   });
 });

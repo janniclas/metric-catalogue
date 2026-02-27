@@ -19,10 +19,13 @@ references:
 ---
 
 # Description
+
 Track coverage of security detection rules for critical assets.
 
 # Measurement
+
 Divide the number of critical assets with active detection rules by the total number of critical assets.
 
 # Notes
+
 Ensures monitoring keeps pace with expanding infrastructure.
