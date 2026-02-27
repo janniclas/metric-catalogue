@@ -4,6 +4,28 @@ import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { getProposeMetricUrl } from "../lib/proposeMetric";
 import type { Metric } from "../lib/metrics";
 import iconUrl from "../assets/SPHA_Icon.svg";
+import {
+  CalendarCheck,
+  Code2,
+  Hammer,
+  FlaskConical,
+  Package,
+  Rocket,
+  Settings,
+  Activity,
+} from "lucide-vue-next";
+import type { Component } from "vue";
+
+const iconMap: Record<string, Component> = {
+  "calendar-check": CalendarCheck,
+  "code-2": Code2,
+  hammer: Hammer,
+  "flask-conical": FlaskConical,
+  package: Package,
+  rocket: Rocket,
+  settings: Settings,
+  activity: Activity,
+};
 
 const { phases, metrics, loading, error, formattedUpdatedAt } = useMetricsCatalogue();
 const proposeMetricUrl = getProposeMetricUrl();
@@ -104,17 +126,14 @@ const topLevelByPhase = computed(() => {
             :style="{ '--delay': index }"
             :to="`/metrics?phase=${phase.id}`"
           >
-            <header class="phase-card__header">
-              <div class="phase-card__icon">{{ phase.icon }}</div>
-              <div>
-                <h3>{{ phase.name }}</h3>
-                <p>{{ phase.description }}</p>
-              </div>
-            </header>
-
+            <div class="phase-card__icon">
+              <component :is="iconMap[phase.icon]" :size="24" />
+            </div>
+            <h3 class="phase-card__title">{{ phase.name }}</h3>
+            <p class="phase-card__desc">{{ phase.description }}</p>
             <div class="phase-card__meta">
-              <span class="meta-label">Top-level metrics</span>
               <span class="meta-value">{{ topLevelByPhase.get(phase.id)?.length ?? 0 }}</span>
+              <span class="meta-label">top-level metrics</span>
             </div>
           </router-link>
         </div>
