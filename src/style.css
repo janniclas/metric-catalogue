@@ -987,6 +987,37 @@ button.ghost:hover,
   stroke-width: 3px;
 }
 
+.catalogue-graph__node.is-highlighted {
+  opacity: 1;
+}
+
+.catalogue-graph__node.is-dim {
+  opacity: 0.28;
+}
+
+.catalogue-graph__links .is-highlighted {
+  stroke: rgba(90, 76, 242, 0.6);
+  stroke-width: 2px;
+}
+
+.catalogue-graph__links .is-dim {
+  opacity: 0.2;
+}
+
+.catalogue-graph__node--root text,
+.catalogue-graph__node--phase text {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.catalogue-graph__node--phase text {
+  fill: var(--text-dark);
+}
+
+.catalogue-graph__node--metric text {
+  font-weight: 600;
+}
+
 .catalogue-graph__panel {
   background: var(--surface);
   border-radius: var(--radius-md);

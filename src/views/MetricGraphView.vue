@@ -7,11 +7,13 @@ import { renderMarkdown } from "../lib/markdown";
 import type { Metric, Phase } from "../lib/metrics";
 
 const { metrics, phases, loading, error, metricById, phaseLabelMap } = useMetricsCatalogue();
+
 const svgRef = ref<SVGSVGElement | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
 const containerWidth = ref(0);
 const showAll = ref(false);
 const selectedMetricId = ref<string | null>(null);
+const selectedPhaseId = ref<string | null>(null);
 
 const maxInitialNodes = 30;
 
@@ -37,32 +39,58 @@ const phaseColorMap = computed(() => {
 type GraphNode = d3.SimulationNodeDatum & {
   id: string;
   label: string;
-  phase: string;
+  phase?: string;
+  role: "metric" | "phase" | "root";
 };
 
 type GraphLink = d3.SimulationLinkDatum<GraphNode> & {
   source: string | GraphNode;
   target: string | GraphNode;
+  role: "phase-link" | "dependency";
 };
 
-const nodes = computed<GraphNode[]>(() =>
-  displayedMetrics.value.map((metric) => ({
+const nodes = computed<GraphNode[]>(() => {
+  const metricNodes = displayedMetrics.value.map((metric) => ({
     id: metric.id,
     label: metric.title,
     phase: metric.phase,
-  })),
-);
+    role: "metric" as const,
+  }));
+
+  const phaseNodes = phases.value.map((phase) => ({
+    id: `phase:${phase.id}`,
+    label: phase.name,
+    phase: phase.id,
+    role: "phase" as const,
+  }));
+
+  return [
+    { id: "root", label: "SSDLC", role: "root" as const },
+    ...phaseNodes,
+    ...metricNodes,
+  ];
+});
 
 const links = computed<GraphLink[]>(() => {
-  const visibleIds = new Set(displayedMetrics.value.map((metric) => metric.id));
+  const visibleMetricIds = new Set(displayedMetrics.value.map((metric) => metric.id));
   const result: GraphLink[] = [];
+
+  for (const phase of phases.value) {
+    result.push({ source: "root", target: `phase:${phase.id}`, role: "phase-link" });
+  }
+
+  for (const metric of displayedMetrics.value) {
+    result.push({ source: `phase:${metric.phase}`, target: metric.id, role: "phase-link" });
+  }
+
   for (const metric of displayedMetrics.value) {
     for (const dependency of metric.depends_on ?? []) {
-      if (!visibleIds.has(dependency)) continue;
+      if (!visibleMetricIds.has(dependency)) continue;
       if (dependency === metric.id) continue;
-      result.push({ source: dependency, target: metric.id });
+      result.push({ source: dependency, target: metric.id, role: "dependency" });
     }
   }
+
   return result;
 });
 
@@ -71,9 +99,26 @@ const selectedMetric = computed(() => {
   return metricById.value.get(selectedMetricId.value) ?? null;
 });
 
+const selectedPhase = computed(() => {
+  if (!selectedPhaseId.value) return null;
+  return phases.value.find((phase) => phase.id === selectedPhaseId.value) ?? null;
+});
+
 const selectedDescription = computed(() => {
   if (!selectedMetric.value) return "";
   return extractDescription(selectedMetric.value);
+});
+
+const highlightedNodeIds = computed(() => {
+  if (!selectedPhaseId.value) return null;
+  const set = new Set<string>();
+  set.add(`phase:${selectedPhaseId.value}`);
+  for (const metric of displayedMetrics.value) {
+    if (metric.phase === selectedPhaseId.value) {
+      set.add(metric.id);
+    }
+  }
+  return set;
 });
 
 function extractDescription(metric: Metric): string {
@@ -106,7 +151,7 @@ function renderGraph() {
   if (!svgRef.value || !containerRef.value) return;
 
   const width = containerRef.value.clientWidth || 720;
-  const height = Math.max(420, Math.round(width * 0.64));
+  const height = Math.max(440, Math.round(width * 0.65));
 
   const svg = d3.select(svgRef.value);
   svg.selectAll("*").remove();
@@ -127,6 +172,7 @@ function renderGraph() {
 
   const nodeList = nodes.value.map((node) => ({ ...node }));
   const linkList = links.value.map((link) => ({ ...link }));
+  const highlightSet = highlightedNodeIds.value;
 
   const linkSelection = zoomGroup
     .append("g")
@@ -134,8 +180,22 @@ function renderGraph() {
     .selectAll("line")
     .data(linkList)
     .join("line")
-    .attr("stroke", "rgba(90, 76, 242, 0.18)")
-    .attr("stroke-width", 1.3);
+    .attr("class", (link) => {
+      if (!highlightSet) return "";
+      const sourceId = typeof link.source === "string" ? link.source : link.source.id;
+      const targetId = typeof link.target === "string" ? link.target : link.target.id;
+      if (highlightSet.has(sourceId) && highlightSet.has(targetId)) {
+        return "is-highlighted";
+      }
+      if (link.role === "phase-link" && (highlightSet.has(sourceId) || highlightSet.has(targetId))) {
+        return "is-highlighted";
+      }
+      return "is-dim";
+    })
+    .attr("stroke", (link) =>
+      link.role === "dependency" ? "rgba(90, 76, 242, 0.18)" : "rgba(40, 40, 80, 0.16)",
+    )
+    .attr("stroke-width", (link) => (link.role === "dependency" ? 1.2 : 1.6));
 
   const nodeSelection = zoomGroup
     .append("g")
@@ -143,24 +203,53 @@ function renderGraph() {
     .selectAll("g")
     .data(nodeList)
     .join("g")
-    .attr("class", (node) =>
-      [
-        "catalogue-graph__node",
-        node.id === selectedMetricId.value ? "is-selected" : "",
-      ]
-        .filter(Boolean)
-        .join(" "),
-    )
-    .style("cursor", "pointer")
-    .on("click", (_, node) => {
-      selectedMetricId.value = node.id;
+    .attr("class", (node) => {
+      const classes = ["catalogue-graph__node", `catalogue-graph__node--${node.role}`];
+      if (node.id === selectedMetricId.value) classes.push("is-selected");
+      if (highlightSet) {
+        classes.push(highlightSet.has(node.id) ? "is-highlighted" : "is-dim");
+      }
+      return classes.join(" ");
     })
-    ;
+    .style("cursor", (node) => (node.role === "metric" || node.role === "phase" ? "pointer" : "default"))
+    .on("click", (_, node) => {
+      if (node.role === "metric") {
+        selectedMetricId.value = node.id;
+        selectedPhaseId.value = null;
+        return;
+      }
+      if (node.role === "phase") {
+        selectedPhaseId.value = node.phase ?? null;
+        selectedMetricId.value = null;
+        return;
+      }
+      selectedMetricId.value = null;
+      selectedPhaseId.value = null;
+    });
+
+  const symbol = d3.symbol();
 
   nodeSelection
+    .filter((node) => node.role === "root" || node.role === "phase")
+    .append("path")
+    .attr("d", (node) => {
+      if (node.role === "root") {
+        return symbol.type(d3.symbolDiamond).size(520)();
+      }
+      return symbol.type(d3.symbolSquare).size(360)();
+    })
+    .attr("fill", (node) => {
+      if (node.role === "root") return "#1f1749";
+      return phaseColorMap.value.get(node.phase ?? "") ?? "#7a6bff";
+    })
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", 2.4);
+
+  nodeSelection
+    .filter((node) => node.role === "metric")
     .append("circle")
     .attr("r", 12)
-    .attr("fill", (node) => phaseColorMap.value.get(node.phase) ?? "#7a6bff")
+    .attr("fill", (node) => phaseColorMap.value.get(node.phase ?? "") ?? "#7a6bff")
     .attr("stroke", "#ffffff")
     .attr("stroke-width", 2);
 
@@ -177,12 +266,20 @@ function renderGraph() {
       d3
         .forceLink<GraphNode, GraphLink>(linkList)
         .id((node) => node.id)
-        .distance(90)
-        .strength(0.8),
+        .distance((link) => (link.role === "phase-link" ? 80 : 100))
+        .strength((link) => (link.role === "phase-link" ? 0.9 : 0.75)),
     )
-    .force("charge", d3.forceManyBody().strength(-260))
+    .force(
+      "charge",
+      d3.forceManyBody<GraphNode>().strength((node) => (node.role === "root" ? -420 : -260)),
+    )
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide(22))
+    .force(
+      "collide",
+      d3
+        .forceCollide<GraphNode>()
+        .radius((node) => (node.role === "root" ? 32 : node.role === "phase" ? 26 : 20)),
+    )
     .on("tick", () => {
       linkSelection
         .attr("x1", (link) => (link.source as GraphNode).x ?? 0)
@@ -218,7 +315,7 @@ onBeforeUnmount(() => {
   stopSimulation();
 });
 
-watch([nodes, links, containerWidth, showAll, selectedMetricId], () => {
+watch([nodes, links, containerWidth, showAll, selectedMetricId, selectedPhaseId], () => {
   void nextTick(renderGraph);
 });
 
@@ -269,21 +366,30 @@ watch(displayedMetrics, (nextMetrics) => {
           </div>
         </div>
         <aside class="catalogue-graph__panel">
-          <div v-if="!selectedMetric" class="catalogue-graph__placeholder">
+          <div v-if="!selectedMetric && !selectedPhase" class="catalogue-graph__placeholder">
             <p class="eyebrow">Details</p>
-            <h3>Select a metric</h3>
+            <h3>Select a metric or phase</h3>
             <p>Click a node to see its description and jump to the detailed view.</p>
+          </div>
+          <div v-else-if="selectedPhase" class="catalogue-graph__details">
+            <p class="metric-phase">SSDLC phase</p>
+            <h3>{{ selectedPhase.name }}</h3>
+            <p class="catalogue-graph__description">{{ selectedPhase.description }}</p>
           </div>
           <div v-else class="catalogue-graph__details">
             <p class="metric-phase">
-              {{ phaseLabelMap.get(selectedMetric.phase) ?? selectedMetric.phase }}
+              {{ phaseLabelMap.get(selectedMetric?.phase ?? "") ?? selectedMetric?.phase }}
             </p>
-            <h3>{{ selectedMetric.title }}</h3>
-            <p class="metric-id">{{ selectedMetric.id }}</p>
+            <h3>{{ selectedMetric?.title }}</h3>
+            <p class="metric-id">{{ selectedMetric?.id }}</p>
             <p v-if="selectedDescription" class="catalogue-graph__description">
               {{ selectedDescription }}
             </p>
-            <RouterLink class="catalogue-graph__link" :to="`/metrics/${selectedMetric.id}`">
+            <RouterLink
+              v-if="selectedMetric"
+              class="catalogue-graph__link"
+              :to="`/metrics/${selectedMetric.id}`"
+            >
               View metric details
             </RouterLink>
           </div>
