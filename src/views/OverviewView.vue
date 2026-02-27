@@ -109,7 +109,7 @@ const topLevelByPhase = computed(() => {
       <div class="container">
         <p class="eyebrow">Phase map</p>
         <div class="section-header section-header--inline">
-          <h2>SSDLC phases and top-level metrics</h2>
+          <h2>SSDLC phases</h2>
           <p class="section-subtitle section-subtitle--inline">
             Top-level metrics are those that are not dependencies of other metrics. Each card shows the
             metrics that define success for that phase.
