@@ -1720,6 +1720,8 @@ button.ghost:hover,
   gap: 12px;
   color: var(--text-dark);
   box-shadow: var(--shadow-soft);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .state-card .state {
@@ -1727,6 +1729,10 @@ button.ghost:hover,
   border: none;
   padding: 0;
   text-align: left;
+}
+
+.state-card .state--error {
+  white-space: pre-wrap;
 }
 
 .state-actions {
