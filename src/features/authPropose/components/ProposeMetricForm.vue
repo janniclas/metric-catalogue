@@ -30,6 +30,7 @@ const { phases, metrics, loading, error } = useMetricsCatalogue();
 
 const phaseOptions = computed<Phase[]>(() => phases.value);
 const phaseIds = computed(() => phaseOptions.value.map((phase) => phase.id));
+const existingIds = computed(() => new Set(metrics.value.map((metric) => metric.id.toLowerCase())));
 
 const tagOptions = computed(() => {
   const set = new Set<string>();
@@ -53,7 +54,9 @@ const toolOptions = computed(() => {
 
 const dependencyOptions = computed(() => metrics.value.map((metric) => metric.id).sort());
 
-const validation = computed(() => validateProposal(form, { phaseIds: phaseIds.value }));
+const validation = computed(() =>
+  validateProposal(form, { phaseIds: phaseIds.value, existingIds: existingIds.value }),
+);
 const errors = computed(() => validation.value.errors);
 const canSubmit = computed(() => validation.value.isValid && !props.disabled && !loading.value);
 
@@ -76,7 +79,10 @@ function normalizeList(values: string[]) {
 }
 
 function handleSubmit() {
-  const result = validateProposal(form, { phaseIds: phaseIds.value });
+  const result = validateProposal(form, {
+    phaseIds: phaseIds.value,
+    existingIds: existingIds.value,
+  });
   if (!result.isValid) return;
 
   emit("submit", {
@@ -93,6 +99,19 @@ function handleSubmit() {
     depends_on: normalizeList(form.depends_on),
     references: normalizeList(form.references),
   });
+}
+
+function suggestId() {
+  if (!form.title.trim()) return;
+  const normalized = form.title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (normalized) {
+    form.id = normalized;
+  }
 }
 </script>
 
@@ -117,14 +136,24 @@ function handleSubmit() {
 
       <div class="form-field">
         <label class="form-label" for="metric-id">Metric id</label>
-        <input
-          id="metric-id"
-          v-model="form.id"
-          class="form-input"
-          type="text"
-          placeholder="plan-security-requirements-coverage"
-          :disabled="props.disabled"
-        />
+        <div class="form-inline">
+          <input
+            id="metric-id"
+            v-model="form.id"
+            class="form-input"
+            type="text"
+            placeholder="plan-security-requirements-coverage"
+            :disabled="props.disabled"
+          />
+          <button
+            type="button"
+            class="ghost"
+            :disabled="props.disabled || !form.title.trim()"
+            @click="suggestId"
+          >
+            Suggest id
+          </button>
+        </div>
         <p v-if="errors.id" class="form-error">{{ errors.id }}</p>
       </div>
 

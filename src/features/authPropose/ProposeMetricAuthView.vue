@@ -29,10 +29,17 @@ const canLogin = computed(() => !envError && !isAuthenticating.value);
 const submitStatus = ref<"idle" | "submitting" | "success" | "error">("idle");
 const submitError = ref<string | null>(null);
 const submitIssueUrl = ref<string | null>(null);
+const formKey = ref(0);
 
 const isSubmitting = computed(() => submitStatus.value === "submitting");
+const isSuccess = computed(() => submitStatus.value === "success");
 const isFormDisabled = computed(
-  () => !isAuthenticated.value || isAuthenticating.value || isSubmitting.value || !!envError,
+  () =>
+    !isAuthenticated.value ||
+    isAuthenticating.value ||
+    isSubmitting.value ||
+    isSuccess.value ||
+    !!envError,
 );
 
 const submitLabel = computed(() => {
@@ -45,6 +52,13 @@ function extractQueryParam(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   if (Array.isArray(value)) return value[0];
   return undefined;
+}
+
+function resetSubmission() {
+  submitStatus.value = "idle";
+  submitError.value = null;
+  submitIssueUrl.value = null;
+  formKey.value += 1;
 }
 
 async function handleSubmit(payload: ProposalFormState) {
@@ -61,7 +75,18 @@ async function handleSubmit(payload: ProposalFormState) {
 
   try {
     const env = loadAuthEnv();
-    const { owner, repo } = parseRepoTarget(env.repoUrl);
+    let owner: string;
+    let repo: string;
+    try {
+      ({ owner, repo } = parseRepoTarget(env.repoUrl));
+    } catch (err) {
+      submitStatus.value = "error";
+      submitError.value =
+        err instanceof Error
+          ? `Configuration error: ${err.message}`
+          : "Configuration error. Please check VITE_REPO_URL.";
+      return;
+    }
     const title = `Metric proposal: ${payload.title}`;
     const body = buildIssueBody(payload);
 
@@ -160,6 +185,7 @@ onMounted(async () => {
 
         <ProposeMetricForm
           class="propose-form-wrapper"
+          :key="formKey"
           :disabled="isFormDisabled"
           :submit-label="submitLabel"
           @submit="handleSubmit"
@@ -169,6 +195,14 @@ onMounted(async () => {
         <div v-if="submitStatus === 'success' && submitIssueUrl" class="state state--success">
           Issue created: <a :href="submitIssueUrl" target="_blank" rel="noopener noreferrer">View on GitHub</a>
         </div>
+        <button
+          v-if="submitStatus === 'success'"
+          class="ghost"
+          type="button"
+          @click="resetSubmission"
+        >
+          Create another proposal
+        </button>
         <div v-if="submitStatus === 'error' && submitError" class="state state--error">
           {{ submitError }}
         </div>

@@ -59,4 +59,13 @@ describe("validateProposal", () => {
     expect(result.isValid).toBe(false);
     expect(result.errors.thresholds).toMatch(/threshold/);
   });
+
+  it("flags duplicate metric ids", () => {
+    const result = validateProposal(baseInput, {
+      phaseIds: ["plan"],
+      existingIds: ["plan-security-coverage"],
+    });
+    expect(result.isValid).toBe(false);
+    expect(result.errors.id).toMatch(/already exists/i);
+  });
 });

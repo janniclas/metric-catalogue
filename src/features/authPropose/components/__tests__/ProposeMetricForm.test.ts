@@ -24,7 +24,7 @@ describe("ProposeMetricForm", () => {
     );
     await fireEvent.update(
       getByLabelText("Metric id") as HTMLInputElement,
-      "plan-security-requirements-coverage",
+      "plan-new-metric",
     );
     await fireEvent.update(getByLabelText("SSDLC phase") as HTMLSelectElement, "plan");
     await fireEvent.update(
@@ -42,7 +42,7 @@ describe("ProposeMetricForm", () => {
     const payload = call[0];
     expect(payload).toMatchObject({
       title: "Security Requirements Coverage",
-      id: "plan-security-requirements-coverage",
+      id: "plan-new-metric",
       phase: "plan",
       description: "Describe the metric.",
     });
@@ -64,5 +64,38 @@ describe("ProposeMetricForm", () => {
     await fireEvent.click(getByRole("button", { name: /submit proposal/i }));
 
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("blocks submit when metric id already exists", async () => {
+    mockFetch(metricsIndexFixture);
+    const onSubmit = vi.fn();
+
+    const { getByLabelText, getByRole, findByText } = render(ProposeMetricForm, {
+      props: {
+        disabled: false,
+        onSubmit,
+      },
+    });
+
+    await flushPromises();
+
+    await fireEvent.update(
+      getByLabelText("Metric title") as HTMLInputElement,
+      "Security Requirements Coverage",
+    );
+    await fireEvent.update(
+      getByLabelText("Metric id") as HTMLInputElement,
+      "plan-security-requirements-coverage",
+    );
+    await fireEvent.update(getByLabelText("SSDLC phase") as HTMLSelectElement, "plan");
+    await fireEvent.update(
+      getByLabelText("Description") as HTMLTextAreaElement,
+      "Describe the metric.",
+    );
+
+    await fireEvent.click(getByRole("button", { name: /submit proposal/i }));
+
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(await findByText(/already exists/i)).toBeTruthy();
   });
 });

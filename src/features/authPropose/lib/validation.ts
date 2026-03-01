@@ -31,10 +31,20 @@ export function validateMetricId(id: string) {
 
 export function validateProposal(
   input: ProposalFormState,
-  { phaseIds }: { phaseIds: string[] | Set<string> },
+  {
+    phaseIds,
+    existingIds,
+  }: { phaseIds: string[] | Set<string>; existingIds?: string[] | Set<string> },
 ) {
   const errors: ProposalFormErrors = {};
   const phaseSet = Array.isArray(phaseIds) ? new Set(phaseIds) : phaseIds;
+  const existingSet = existingIds
+    ? new Set(
+        Array.isArray(existingIds)
+          ? existingIds.map((id) => id.toLowerCase())
+          : [...existingIds].map((id) => id.toLowerCase()),
+      )
+    : null;
 
   if (!input.title.trim()) {
     errors.title = "Metric title is required.";
@@ -43,6 +53,8 @@ export function validateProposal(
   const idError = validateMetricId(input.id);
   if (idError) {
     errors.id = idError;
+  } else if (existingSet && existingSet.has(input.id.trim().toLowerCase())) {
+    errors.id = "Metric id already exists.";
   }
 
   if (!input.phase.trim()) {

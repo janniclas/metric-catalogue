@@ -37,6 +37,26 @@ function addValue(raw?: string) {
   inputValue.value = "";
 }
 
+function addValues(list: string[]) {
+  if (list.length === 0) return;
+  const existing = new Set(values.value.map((value) => value.toLowerCase()));
+  const next = [...values.value];
+  let changed = false;
+  for (const item of list) {
+    const candidate = normalizeValue(item);
+    if (!candidate) continue;
+    const key = candidate.toLowerCase();
+    if (existing.has(key)) continue;
+    existing.add(key);
+    next.push(candidate);
+    changed = true;
+  }
+  if (changed) {
+    emit("update:modelValue", next);
+  }
+  inputValue.value = "";
+}
+
 function removeValue(target: string) {
   emit(
     "update:modelValue",
@@ -53,6 +73,15 @@ function handleKeydown(event: KeyboardEvent) {
 
 function handleBlur() {
   addValue();
+}
+
+function handlePaste(event: ClipboardEvent) {
+  const text = event.clipboardData?.getData("text");
+  if (!text) return;
+  const parts = text.split(/[\n,]+/g).map((item) => item.trim());
+  if (parts.length === 0) return;
+  event.preventDefault();
+  addValues(parts);
 }
 </script>
 
@@ -72,6 +101,7 @@ function handleBlur() {
         :list="listId"
         @keydown="handleKeydown"
         @blur="handleBlur"
+        @paste="handlePaste"
       />
       <datalist :id="listId">
         <option v-for="option in suggestions ?? []" :key="option" :value="option" />

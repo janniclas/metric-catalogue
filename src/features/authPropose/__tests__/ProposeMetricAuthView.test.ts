@@ -211,7 +211,7 @@ describe("ProposeMetricAuthView", () => {
     );
     await fireEvent.update(
       getByLabelText("Metric id") as HTMLInputElement,
-      "plan-security-requirements-coverage",
+      "plan-new-metric",
     );
     await fireEvent.update(getByLabelText("SSDLC phase") as HTMLSelectElement, "plan");
     await fireEvent.update(
@@ -231,5 +231,52 @@ describe("ProposeMetricAuthView", () => {
     expect(payload.labels).toEqual(["metric-proposal"]);
     expect(payload.title).toBe("Metric proposal: Security Requirements Coverage");
     expect(payload.body).toContain("### Metric title");
+  });
+
+  it("resets the form after success", async () => {
+    mockFetch(metricsIndexFixture);
+    mockEnvError = null;
+    createIssue.mockResolvedValueOnce({ htmlUrl: "https://github.com/org/repo/issues/1", number: 1 });
+
+    authState = {
+      status: ref("authenticated"),
+      username: ref("octocat"),
+      accessToken: ref("token"),
+      error: ref(null),
+      startLogin: vi.fn(),
+      handleCallback: vi.fn(),
+      logout: vi.fn(),
+      clearError: vi.fn(),
+    };
+
+    const router = buildRouter();
+    await router.isReady();
+
+    const { getByLabelText, getByRole, findByText, queryByText } = render(ProposeMetricAuthView, {
+      global: { plugins: [router] },
+    });
+
+    await flushPromises();
+
+    await fireEvent.update(
+      getByLabelText("Metric title") as HTMLInputElement,
+      "Security Requirements Coverage",
+    );
+    await fireEvent.update(
+      getByLabelText("Metric id") as HTMLInputElement,
+      "plan-new-metric",
+    );
+    await fireEvent.update(getByLabelText("SSDLC phase") as HTMLSelectElement, "plan");
+    await fireEvent.update(
+      getByLabelText("Description") as HTMLTextAreaElement,
+      "Describe the metric.",
+    );
+
+    await fireEvent.click(getByRole("button", { name: /create github issue/i }));
+
+    await findByText(/Issue created/);
+    await fireEvent.click(getByRole("button", { name: /Create another proposal/i }));
+
+    expect(queryByText(/Issue created/)).toBeNull();
   });
 });

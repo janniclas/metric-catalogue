@@ -343,6 +343,7 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 - Session 2026-03-01: Completed PM-UI-1, PM-UI-2, PM-UI-3, PM-UI-4.
 - Session 2026-03-01: Implemented submission wiring + UX states; completed PM-UX-1 to PM-UX-7 and PM-SEC-1, PM-SEC-2.
 - Session 2026-03-01: Verified build outputs for flag on/off; completed PM-BUILD-1 and PM-BUILD-2.
+- Session 2026-03-01: Added id suggestion, duplicate id validation, submission reset flow, parseRepoTarget error mapping, multi-value paste handling, and form/state styling polish.
 
 ## Blocking Questions
 

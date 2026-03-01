@@ -1655,6 +1655,16 @@ button.ghost:hover,
   gap: 8px;
 }
 
+.form-inline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.form-inline .form-input {
+  flex: 1 1 auto;
+}
+
 .form-label {
   font-weight: 600;
   color: var(--text-dark);
@@ -1698,6 +1708,30 @@ button.ghost:hover,
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+.state-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+  color: var(--text-dark);
+  box-shadow: var(--shadow-soft);
+}
+
+.state-card .state {
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.state-actions {
+  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
