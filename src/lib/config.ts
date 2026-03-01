@@ -1,3 +1,4 @@
+import { FEATURE_AUTH_PROPOSE_METRIC } from "./featureFlags";
 import { getProposeMetricUrl } from "./proposeMetric";
 
 type LinkConfig = {
@@ -40,6 +41,10 @@ const fraunhofer: LinkConfig = {
 };
 
 export const proposeMetricUrl = getProposeMetricUrl();
+export const proposeMetricHref = FEATURE_AUTH_PROPOSE_METRIC
+  ? "/propose-auth"
+  : proposeMetricUrl;
+export const proposeMetricIsExternal = !FEATURE_AUTH_PROPOSE_METRIC;
 export const headerSocialLinks = [github, linkedin];
 export const footerLinks = [github, linkedin, fraunhofer];
 export const getRepoUrl = () => import.meta.env.VITE_REPO_URL;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
-import { proposeMetricUrl } from "../lib/config";
+import { proposeMetricHref, proposeMetricIsExternal } from "../lib/config";
 import type { Metric } from "../lib/metrics";
 import iconUrl from "../assets/SPHA_Icon.svg";
 import {
@@ -79,7 +79,16 @@ const topLevelByPhase = computed(() => {
         </p>
         <div class="hero__actions">
           <router-link class="primary" to="/metrics">View all metrics</router-link>
-          <a class="ghost" :href="proposeMetricUrl" target="_blank" rel="noopener noreferrer">
+          <router-link v-if="!proposeMetricIsExternal" class="ghost" :to="proposeMetricHref">
+            Propose a metric
+          </router-link>
+          <a
+            v-else
+            class="ghost"
+            :href="proposeMetricHref"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Propose a metric
           </a>
         </div>

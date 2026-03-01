@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { headerSocialLinks, proposeMetricUrl } from "../lib/config";
+import { headerSocialLinks, proposeMetricHref, proposeMetricIsExternal } from "../lib/config";
 import logoUrl from "../assets/SPHA_Icon.svg";
 
 const isScrolled = ref(false);
@@ -139,9 +139,18 @@ watch(
             </RouterLink>
           </div>
         </div>
-        <a
+        <RouterLink
+          v-if="!proposeMetricIsExternal"
           class="nav-cta"
-          :href="proposeMetricUrl"
+          :to="proposeMetricHref"
+          @click="closeAllMenus"
+        >
+          Propose a metric
+        </RouterLink>
+        <a
+          v-else
+          class="nav-cta"
+          :href="proposeMetricHref"
           target="_blank"
           rel="noopener noreferrer"
           @click="closeAllMenus"
