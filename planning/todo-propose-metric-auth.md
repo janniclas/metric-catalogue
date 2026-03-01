@@ -57,42 +57,42 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 3: Auth Module (OAuth Flow)
 
-- [ ] `PM-AUTH-1` Implement state and PKCE generation
+- [x] `PM-AUTH-1` Implement state and PKCE generation
 `Description:` Create helpers to generate `state`, `code_verifier`, and `code_challenge` (S256). Persist state and verifier across redirect using `sessionStorage` only.
 `Files/modules affected:` `src/features/authPropose/lib/pkce.ts` (new), `src/features/authPropose/lib/state.ts` (new)
 `Dependencies:` PM-ENV-2
 `Acceptance criteria:` `state` and `code_verifier` are generated per auth attempt and survive redirect; no token storage occurs.
 `Mode scope:` auth-only
 
-- [ ] `PM-AUTH-2` Build authorize redirect URL
+- [x] `PM-AUTH-2` Build authorize redirect URL
 `Description:` Construct GitHub authorize URL using client ID, scope `public_repo`, state, PKCE challenge, and redirect URI.
 `Files/modules affected:` `src/features/authPropose/lib/auth.ts`
 `Dependencies:` PM-AUTH-1, PM-ENV-2
 `Acceptance criteria:` URL includes `client_id`, `scope=public_repo`, `state`, `code_challenge`, `code_challenge_method=S256`, and `redirect_uri`.
 `Mode scope:` auth-only
 
-- [ ] `PM-AUTH-3` Handle OAuth callback and validate state
+- [x] `PM-AUTH-3` Handle OAuth callback and validate state
 `Description:` Parse `code` and `state` on callback, validate against stored state, and guard against CSRF.
 `Files/modules affected:` `src/features/authPropose/lib/auth.ts`, `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-1, PM-AUTH-2
 `Acceptance criteria:` Mismatched or missing `state` causes authentication to fail with a clear error; valid state proceeds to exchange.
 `Mode scope:` auth-only
 
-- [ ] `PM-AUTH-4` Exchange code for token
+- [x] `PM-AUTH-4` Exchange code for token
 `Description:` Call backend `POST /oauth/github/exchange` with `code`, `state`, `code_verifier`, and `redirect_uri`.
 `Files/modules affected:` `src/features/authPropose/lib/auth.ts`
 `Dependencies:` PM-AUTH-3
 `Acceptance criteria:` Successful exchange returns `{ access_token, username }`; errors are surfaced for the UI.
 `Mode scope:` auth-only
 
-- [ ] `PM-AUTH-5` In-memory token storage and logout
+- [x] `PM-AUTH-5` In-memory token storage and logout
 `Description:` Store token and username in memory only; add logout that clears auth state and form state.
 `Files/modules affected:` `src/features/authPropose/lib/auth.ts`, `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-4
 `Acceptance criteria:` Token is not persisted in localStorage/sessionStorage; logout clears auth and form; refresh loses token and shows logged-out state.
 `Mode scope:` auth-only
 
-- [ ] `PM-AUTH-6` UX messaging for token loss on refresh
+- [x] `PM-AUTH-6` UX messaging for token loss on refresh
 `Description:` Provide UI text indicating that authentication is temporary and will reset on refresh.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-5
@@ -101,14 +101,14 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 4: GitHub API Client
 
-- [ ] `PM-GH-1` Implement minimal GitHub issues client
+- [x] `PM-GH-1` Implement minimal GitHub issues client
 `Description:` Create a helper to call `POST /repos/{owner}/{repo}/issues` with Bearer token, JSON body, and required headers.
 `Files/modules affected:` `src/features/authPropose/lib/githubApi.ts`
 `Dependencies:` PM-ENV-3, PM-AUTH-5
 `Acceptance criteria:` Requests include `Authorization: Bearer <token>`, `Accept: application/vnd.github+json`, `X-GitHub-Api-Version`.
 `Mode scope:` auth-only
 
-- [ ] `PM-GH-2` Normalize GitHub API error responses
+- [x] `PM-GH-2` Normalize GitHub API error responses
 `Description:` Map 401, 403, and rate-limit responses to consistent error objects for UI.
 `Files/modules affected:` `src/features/authPropose/lib/githubApi.ts`
 `Dependencies:` PM-GH-1
@@ -117,21 +117,21 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 5: Issue Body Builder (Parser-Compatible)
 
-- [ ] `PM-ISSUE-1` Implement issue body builder
+- [x] `PM-ISSUE-1` Implement issue body builder
 `Description:` Build a function that outputs the exact heading order and labels expected by `scripts/issue-to-metric.ts`, including `_No response_` for empty optional fields.
 `Files/modules affected:` `src/features/authPropose/lib/buildIssueBody.ts`
 `Dependencies:` PM-ENV-3
 `Acceptance criteria:` Generated body includes all 12 headings in exact order with correct labels.
 `Mode scope:` auth-only
 
-- [ ] `PM-ISSUE-2` Enforce threshold line format
+- [x] `PM-ISSUE-2` Enforce threshold line format
 `Description:` Validate and normalize threshold entries to `Name | Value | Optional description`.
 `Files/modules affected:` `src/features/authPropose/lib/buildIssueBody.ts`, `src/features/authPropose/lib/validation.ts` (new)
 `Dependencies:` PM-ISSUE-1
 `Acceptance criteria:` Invalid thresholds are rejected with clear errors before submission.
 `Mode scope:` auth-only
 
-- [ ] `PM-ISSUE-3` Snapshot-test issue body format
+- [x] `PM-ISSUE-3` Snapshot-test issue body format
 `Description:` Add tests that snapshot the full body string and verify heading order and `_No response_` placeholders.
 `Files/modules affected:` `src/features/authPropose/lib/__tests__/buildIssueBody.test.ts` (new)
 `Dependencies:` PM-ISSUE-1
@@ -140,14 +140,14 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 6: Form Domain Model & Validation Schema
 
-- [ ] `PM-FORM-1` Define proposal form model
+- [x] `PM-FORM-1` Define proposal form model
 `Description:` Create a shared type for proposal form state using `Threshold` from `src/lib/metrics.ts`.
 `Files/modules affected:` `src/features/authPropose/lib/types.ts` (new)
 `Dependencies:` PM-ISSUE-1
 `Acceptance criteria:` Form model matches fields required by the issue template and parser.
 `Mode scope:` auth-only
 
-- [ ] `PM-FORM-2` Implement validation schema
+- [x] `PM-FORM-2` Implement validation schema
 `Description:` Validate required fields, kebab-case metric id, known phase ID, and thresholds.
 `Files/modules affected:` `src/features/authPropose/lib/validation.ts`
 `Dependencies:` PM-FORM-1
@@ -338,7 +338,8 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Progress Log
 
-- Session 2026-03-01: Completed PM-FF-1, PM-FF-2, PM-FF-3, PM-ENV-1, PM-ENV-2, PM-ENV-3, PM-ROUTE-1, PM-CTA-1, PM-CTA-2.
+- Session 2026-03-01: Completed PM-FF-1, PM-FF-2, PM-FF-3, PM-ENV-1, PM-ENV-2, PM-ENV-3, PM-AUTH-1, PM-AUTH-2, PM-AUTH-3, PM-AUTH-4, PM-AUTH-5, PM-AUTH-6, PM-GH-1, PM-GH-2, PM-ISSUE-1, PM-ISSUE-2, PM-ISSUE-3, PM-ROUTE-1, PM-CTA-1, PM-CTA-2.
+- Session 2026-03-01: Updated auth flow safeguards (Accept header, callback guard, safer error handling, clear session on errors) and documented backend contract; completed PM-FORM-1 and PM-FORM-2.
 
 ## Blocking Questions
 
