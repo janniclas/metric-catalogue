@@ -4,7 +4,6 @@ import AboutView from "./views/AboutView.vue";
 import MetricsView from "./views/MetricsView.vue";
 import MetricDetailView from "./views/MetricDetailView.vue";
 import MetricGraphView from "./views/MetricGraphView.vue";
-import { FEATURE_AUTH_PROPOSE_METRIC } from "./lib/featureFlags";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -34,7 +33,9 @@ const routes: RouteRecordRaw[] = [
   },
 ];
 
-if (FEATURE_AUTH_PROPOSE_METRIC) {
+const enableAuthPropose = import.meta.env.VITE_FEATURE_AUTH_PROPOSE_METRIC === "true";
+
+if (enableAuthPropose) {
   const { authRoutes } = await import("./features/authPropose/routes");
   routes.push(...authRoutes);
 }

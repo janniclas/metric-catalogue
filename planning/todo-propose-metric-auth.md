@@ -156,28 +156,28 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 7: UI Components (Form, Editors, Selects)
 
-- [ ] `PM-UI-1` Build core form component
+- [x] `PM-UI-1` Build core form component
 `Description:` Implement the propose-metric form with dropdowns, autocomplete inputs, markdown editor, and threshold editor.
 `Files/modules affected:` `src/features/authPropose/components/ProposeMetricForm.vue`
 `Dependencies:` PM-FORM-2
 `Acceptance criteria:` Form renders all required fields and surfaces validation feedback inline.
 `Mode scope:` auth-only
 
-- [ ] `PM-UI-2` Implement markdown editor with preview
+- [x] `PM-UI-2` Implement markdown editor with preview
 `Description:` Provide textarea with live preview using `renderMarkdown`.
 `Files/modules affected:` `src/features/authPropose/components/MarkdownEditor.vue`
 `Dependencies:` PM-UI-1
 `Acceptance criteria:` Preview is sanitized and updates as text changes.
 `Mode scope:` auth-only
 
-- [ ] `PM-UI-3` Implement thresholds editor
+- [x] `PM-UI-3` Implement thresholds editor
 `Description:` Allow adding/removing structured threshold rows (name/value/description).
 `Files/modules affected:` `src/features/authPropose/components/ThresholdEditor.vue`
 `Dependencies:` PM-UI-1
 `Acceptance criteria:` Thresholds serialize into the required `Name | Value | Optional description` lines.
 `Mode scope:` auth-only
 
-- [ ] `PM-UI-4` Add autocomplete data sources
+- [x] `PM-UI-4` Add autocomplete data sources
 `Description:` Populate tags/tools/depends-on suggestions from `useMetricsCatalogue()`.
 `Files/modules affected:` `src/features/authPropose/components/ProposeMetricForm.vue`, `src/lib/useMetricsCatalogue.ts`
 `Dependencies:` PM-UI-1
@@ -211,49 +211,49 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 10: Error Handling & UX States
 
-- [ ] `PM-UX-1` Unauthenticated state
+- [x] `PM-UX-1` Unauthenticated state
 `Description:` Disable submit and show “Login with GitHub” button.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-5, PM-UI-1
 `Acceptance criteria:` Submit is disabled when unauthenticated; login button visible.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-2` Authenticating state
+- [x] `PM-UX-2` Authenticating state
 `Description:` Show progress indicator while code exchange is in progress.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-4
 `Acceptance criteria:` UI shows “Authenticating…” and disables form submission.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-3` Authenticated ready state
+- [x] `PM-UX-3` Authenticated ready state
 `Description:` Show GitHub username and enable submit.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-AUTH-5
 `Acceptance criteria:` Username is visible; submit enabled when form is valid.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-4` Submit in progress state
+- [x] `PM-UX-4` Submit in progress state
 `Description:` Disable submit and prevent double click during issue creation.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-GH-1
 `Acceptance criteria:` Submit button is disabled; repeated clicks do not create multiple requests.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-5` Success state
+- [x] `PM-UX-5` Success state
 `Description:` Show created issue URL after success.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-GH-1, PM-ISSUE-1
 `Acceptance criteria:` Success banner shows link to the created issue.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-6` GitHub API error state
+- [x] `PM-UX-6` GitHub API error state
 `Description:` Surface 401/403/rate-limit errors with actionable guidance.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-GH-2
 `Acceptance criteria:` Error messaging distinguishes unauthorized, forbidden, and rate-limit responses.
 `Mode scope:` auth-only
 
-- [ ] `PM-UX-7` Network error state
+- [x] `PM-UX-7` Network error state
 `Description:` Handle network failures with retry guidance.
 `Files/modules affected:` `src/features/authPropose/ProposeMetricAuthView.vue`
 `Dependencies:` PM-GH-1
@@ -262,14 +262,14 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 11: Security Hardening
 
-- [ ] `PM-SEC-1` Enforce no token persistence
+- [x] `PM-SEC-1` Enforce no token persistence
 `Description:` Add checks to ensure no token is stored in localStorage/sessionStorage.
 `Files/modules affected:` `src/features/authPropose/lib/auth.ts`
 `Dependencies:` PM-AUTH-5
 `Acceptance criteria:` Token exists only in memory and is cleared on refresh.
 `Mode scope:` auth-only
 
-- [ ] `PM-SEC-2` Sanitize markdown preview
+- [x] `PM-SEC-2` Sanitize markdown preview
 `Description:` Ensure markdown preview uses `renderMarkdown` with DOMPurify.
 `Files/modules affected:` `src/features/authPropose/components/MarkdownEditor.vue`, `src/lib/markdown.ts`
 `Dependencies:` PM-UI-2
@@ -278,14 +278,14 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 ## Phase 12: Build Verification (Flag On/Off)
 
-- [ ] `PM-BUILD-1` Verify static build output
+- [x] `PM-BUILD-1` Verify static build output
 `Description:` Build with `VITE_FEATURE_AUTH_PROPOSE_METRIC=false` and confirm auth code is not bundled.
 `Files/modules affected:` Build artifacts in `dist/`
 `Dependencies:` PM-FF-4
 `Acceptance criteria:` No auth-only chunks and no `/propose-auth` route in static output.
 `Mode scope:` shared
 
-- [ ] `PM-BUILD-2` Verify auth build output
+- [x] `PM-BUILD-2` Verify auth build output
 `Description:` Build with `VITE_FEATURE_AUTH_PROPOSE_METRIC=true` and confirm auth chunks and routes are present.
 `Files/modules affected:` Build artifacts in `dist/`
 `Dependencies:` PM-FF-4
@@ -340,6 +340,9 @@ This TODO list is derived from `planning/plan-propose-metric.md`. It is structur
 
 - Session 2026-03-01: Completed PM-FF-1, PM-FF-2, PM-FF-3, PM-ENV-1, PM-ENV-2, PM-ENV-3, PM-AUTH-1, PM-AUTH-2, PM-AUTH-3, PM-AUTH-4, PM-AUTH-5, PM-AUTH-6, PM-GH-1, PM-GH-2, PM-ISSUE-1, PM-ISSUE-2, PM-ISSUE-3, PM-ROUTE-1, PM-CTA-1, PM-CTA-2.
 - Session 2026-03-01: Updated auth flow safeguards (Accept header, callback guard, safer error handling, clear session on errors) and documented backend contract; completed PM-FORM-1 and PM-FORM-2.
+- Session 2026-03-01: Completed PM-UI-1, PM-UI-2, PM-UI-3, PM-UI-4.
+- Session 2026-03-01: Implemented submission wiring + UX states; completed PM-UX-1 to PM-UX-7 and PM-SEC-1, PM-SEC-2.
+- Session 2026-03-01: Verified build outputs for flag on/off; completed PM-BUILD-1 and PM-BUILD-2.
 
 ## Blocking Questions
 

@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { loadAuthEnv } from "./lib/env";
 import { useAuth } from "./lib/auth";
+import ProposeMetricForm from "./components/ProposeMetricForm.vue";
+import type { ProposalFormState } from "./lib/types";
+import { buildIssueBody } from "./lib/buildIssueBody";
+import { createIssue, GitHubApiError } from "./lib/githubApi";
+import { parseRepoTarget } from "./lib/repo";
 
 let envError: string | null = null;
 try {
@@ -13,17 +18,85 @@ try {
 
 const route = useRoute();
 const router = useRouter();
-const { status, username, error, startLogin, handleCallback, logout, clearError } = useAuth();
+const { status, username, error, startLogin, handleCallback, logout, clearError, accessToken } =
+  useAuth();
 
 const authError = computed(() => envError ?? error.value);
 const isAuthenticating = computed(() => status.value === "authenticating");
 const isAuthenticated = computed(() => status.value === "authenticated");
 const canLogin = computed(() => !envError && !isAuthenticating.value);
 
+const submitStatus = ref<"idle" | "submitting" | "success" | "error">("idle");
+const submitError = ref<string | null>(null);
+const submitIssueUrl = ref<string | null>(null);
+
+const isSubmitting = computed(() => submitStatus.value === "submitting");
+const isFormDisabled = computed(
+  () => !isAuthenticated.value || isAuthenticating.value || isSubmitting.value || !!envError,
+);
+
+const submitLabel = computed(() => {
+  if (!isAuthenticated.value) return "Login required";
+  if (isSubmitting.value) return "Creating issue…";
+  return "Create GitHub issue";
+});
+
 function extractQueryParam(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   if (Array.isArray(value)) return value[0];
   return undefined;
+}
+
+async function handleSubmit(payload: ProposalFormState) {
+  if (isSubmitting.value) return;
+  if (!isAuthenticated.value || !accessToken.value) {
+    submitStatus.value = "error";
+    submitError.value = "Please log in with GitHub before submitting.";
+    return;
+  }
+
+  submitStatus.value = "submitting";
+  submitError.value = null;
+  submitIssueUrl.value = null;
+
+  try {
+    const env = loadAuthEnv();
+    const { owner, repo } = parseRepoTarget(env.repoUrl);
+    const title = `Metric proposal: ${payload.title}`;
+    const body = buildIssueBody(payload);
+
+    const issue = await createIssue({
+      token: accessToken.value,
+      owner,
+      repo,
+      title,
+      body,
+      labels: ["metric-proposal"],
+    });
+
+    submitIssueUrl.value = issue.htmlUrl;
+    submitStatus.value = "success";
+  } catch (err) {
+    submitStatus.value = "error";
+    if (err instanceof GitHubApiError) {
+      if (err.kind === "unauthorized") {
+        submitError.value = "GitHub authorization expired. Please log in again.";
+      } else if (err.kind === "rate_limited") {
+        submitError.value = "GitHub rate limit reached. Please try again later.";
+      } else if (err.kind === "forbidden") {
+        submitError.value = "GitHub rejected the request. Check repository permissions.";
+      } else {
+        submitError.value = err.message;
+      }
+    } else {
+      if (import.meta.env.DEV) {
+        console.error(err);
+      } else {
+        console.error("Issue submission failed.");
+      }
+      submitError.value = "Network error. Please try again.";
+    }
+  }
 }
 
 onMounted(async () => {
@@ -83,6 +156,21 @@ onMounted(async () => {
           <button v-if="authError && !envError" class="ghost" type="button" @click="clearError">
             Dismiss error
           </button>
+        </div>
+
+        <ProposeMetricForm
+          class="propose-form-wrapper"
+          :disabled="isFormDisabled"
+          :submit-label="submitLabel"
+          @submit="handleSubmit"
+        />
+
+        <div v-if="submitStatus === 'submitting'" class="state">Creating GitHub issue…</div>
+        <div v-if="submitStatus === 'success' && submitIssueUrl" class="state state--success">
+          Issue created: <a :href="submitIssueUrl" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </div>
+        <div v-if="submitStatus === 'error' && submitError" class="state state--error">
+          {{ submitError }}
         </div>
       </div>
     </section>
