@@ -54,7 +54,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Open pull request
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           METRIC_ID: ${{ env.METRIC_ID }}
